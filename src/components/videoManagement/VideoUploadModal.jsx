@@ -715,17 +715,14 @@ const VideoUploadModal = ({
             { min: 10, message: "Description must be at least 10 characters" },
           ]}
         >
-<<<<<<< HEAD
-          <TextArea rows={5} disabled={uploading} />
-=======
+        
           <TextArea
-            rows={4}
+            rows={5}
             disabled={uploading}
             placeholder="Describe the workout, exercises, intensity level, etc."
             showCount
-            maxLength={500}
+          
           />
->>>>>>> b0adcdef64fc3a27d763e8465f20812b438d2adb
         </Form.Item>
 
         <div className="flex justify-end gap-3 mt-6">
