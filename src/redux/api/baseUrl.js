@@ -1,5 +1,5 @@
 export const getBaseUrl = (production) => {
-    return production ? 'https://api.yogawithjen.life' : "http://10.10.7.48:7000";
+    return production ? 'https://api.yogawithjen.life' : "http://10.10.7.48:5002";
 }
 
 export const getConfigUrl = (production) => {

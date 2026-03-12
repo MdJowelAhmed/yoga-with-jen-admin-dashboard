@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pencil, X, Plus, ChevronDown } from "lucide-react";
+import { Pencil, X, Plus, ChevronDown, Apple, Play, CirclePlay } from "lucide-react";
 import { Dropdown, Menu, Button, Modal } from "antd";
 import {
   useGetSubscriptionPackagesQuery,
@@ -328,13 +328,22 @@ export default function SubscriptionPackagesManagement() {
               >
                 {/* Type Label - Rotated and positioned at top left */}
                 <div
-                  className="absolute top-0 px-3 py-1 text-xs text-black bg-gray-100 rounded-md -left-5"
+                  className="absolute top-0 px-3 py-1 text-xs text-black bg-gray-100 rounded-md -left-5 flex items-center gap-1"
                   style={{
                     transform: "rotate(-50deg)",
                     transformOrigin: "top right",
                   }}
                 >
-                  {pkg.subscriptionType}
+                  <span>{pkg.subscriptionType}</span>
+                  {pkg.subscriptionType === "app" && (
+                    <>
+                      {pkg.appleProductId && pkg.appleProductId.trim() !== "" ? (
+                        <Apple size={14} />
+                      ) : pkg.googleProductId && pkg.googleProductId.trim() !== "" ? (
+                        <CirclePlay size={14} />
+                      ) : null}
+                    </>
+                  )}
                 </div>
 
                 {/* Discount Badge */}

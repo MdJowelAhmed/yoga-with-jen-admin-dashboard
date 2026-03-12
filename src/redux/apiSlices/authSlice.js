@@ -16,7 +16,7 @@ const authSlice = api.injectEndpoints({
         url: "/auth/login",
         body: data,
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: ["Auth","User"],
     }),
 
     forgotPassword: builder.mutation({

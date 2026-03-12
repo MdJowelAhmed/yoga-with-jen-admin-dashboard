@@ -1,5 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import React from "react";
+import toast from "react-hot-toast";
 import { Navigate, useLocation } from "react-router-dom";
 
 const PrivateRoute = ({ children }) => {
@@ -24,6 +25,7 @@ const PrivateRoute = ({ children }) => {
     if (decoded.role === "ADMIN" || decoded.role === "SUPER_ADMIN") {
       return children;
     } else {
+      toast.error("You are not authorized to access this page");  
       return <Navigate to="/auth/login" state={{ from: location }} replace />;
     }
   } catch (error) {

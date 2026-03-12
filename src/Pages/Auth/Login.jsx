@@ -6,6 +6,7 @@ import image4 from "../../assets/image4.png";
 import { useLoginMutation } from "../../redux/apiSlices/authSlice";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -27,6 +28,10 @@ const Login = () => {
         const decoded = jwtDecode(token);
 
         // Navigate based on role
+        if(decoded.role === "USER"){
+          toast.error("You are not authorized to access this page");
+          navigate("/auth/login");
+        }
         if (decoded.role === "ADMIN") {
           navigate("/category-management");
         } else if (decoded.role === "SUPER_ADMIN") {

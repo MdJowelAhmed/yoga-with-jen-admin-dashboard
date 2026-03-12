@@ -470,7 +470,7 @@ const VideoUploadModal = ({
           name="description"
           rules={[{ required: true }]}
         >
-          <TextArea rows={4} disabled={uploading} />
+          <TextArea rows={5} disabled={uploading} />
         </Form.Item>
 
         <div className="flex justify-end gap-2 mt-4">

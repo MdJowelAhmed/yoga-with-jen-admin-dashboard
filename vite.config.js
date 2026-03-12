@@ -8,6 +8,6 @@ export default defineConfig({
   server: {
     // host: getConfigUrl(isProduction),
     host: "69.62.67.86",
-    // port: 3007,
+    port: 3007,
   },
 });
