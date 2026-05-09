@@ -265,8 +265,8 @@ const Header = () => {
     >
       <Flex
         align="center"
-        justify="between"
-        className="w-full min-h-[85px] px-4 py-2 shadow-sm overflow-auto text-slate-700 bg-white"
+        justify="space-between"
+        className="w-full min-h-[72px] px-4 py-2 shadow-sm overflow-auto text-slate-700 bg-white"
       >
         {/* <div>
           <CgMenu

@@ -100,7 +100,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .custom-tooltip .ant-tooltip-inner {
-  background: linear-gradient(to right, #4e9dab, #336c79);
+  background: linear-gradient(to right, #de5555, #de5555);
   color: white;
 }
 
@@ -146,21 +146,16 @@ input[type="number"]::-webkit-inner-spin-button {
   background-color: transparent !important; /* Disable hover effect */
 }
 
-/* Override hover state for the filtering buttons */
-.ant-dropdown-button:hover {
-  background-color: #c93d3d !important; /* This will give you bg-red-800 */
-  color: white !important; /* Ensure text remains white */
+/* Filter / dropdown trigger buttons only — global .ant-btn:hover breaks all Ant buttons */
+.ant-dropdown-button.ant-btn:hover,
+.ant-dropdown-button:hover.ant-btn {
+  background-color: #c93d3d !important;
+  color: white !important;
+  border: none !important;
 }
 
-/* Override specific button hover style for filtering dropdown */
-.ant-btn:hover {
-  background-color: #c93d3d !important; /* Apply red background on hover */
-  color: white !important; /* Text color remains white */
-  border: none !important; /* Ensure no border on hover */
-}
-
-.ant-btn .ant-space-item {
-  color: white !important; /* Ensures any inner elements (like icons) have white color */
+.ant-dropdown-button.ant-btn .ant-space-item {
+  color: white !important;
 }
 
 .ant-dropdown-button.ant-btn .ant-space-item:hover {

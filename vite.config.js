@@ -6,8 +6,8 @@ import { isProduction } from "./src/redux/api/baseApi";
 export default defineConfig({
   plugins: [react()],
   server: {
-    // host: getConfigUrl(isProduction),
-    host: "69.62.67.86",
+    host: getConfigUrl(isProduction),
+    // host: "69.62.67.86",
     port: 3007,
   },
 });
