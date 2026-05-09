@@ -6,7 +6,7 @@ import { Outlet } from "react-router-dom";
 const Main = () => {
   return (
     <div className="flex h-screen overflow-hidden bg-baseBg">
-      <div className="w-1/6 border-r-2 border-primary bg-baseBg fixed inset-y-0 left-0 z-20 overflow-y-auto">
+      <div className="w-1/6 border-r-2 border-primary bg-baseBg fixed inset-y-0 left-0 z-20">
         <Sidebar />
       </div>
       <div className="flex flex-col flex-1 ml-[16.66%] min-h-0 min-w-0">
