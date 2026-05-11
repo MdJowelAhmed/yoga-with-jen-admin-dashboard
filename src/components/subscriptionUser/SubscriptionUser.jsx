@@ -147,18 +147,16 @@ const SubscriptionManagementTable = () => {
       ),
     },
     {
-      title: "Transaction ID",
-      dataIndex: "trxId",
-      key: "trxId",
+      title: "Subscription",
+      dataIndex: "provider",
+      key: "provider",
       align: "center",
-      render: (trxId) =>
-        trxId ? (
+      render: (provider) =>
+        provider ? (
           <span className="text-xs font-mono bg-gray-100 px-2 py-1 rounded">
-            {trxId}
+            {provider}
           </span>
-        ) : (
-          <span className="text-xs text-gray-500 italic">After Trial</span>
-        ),
+        ) : null,
     },
   ];
 
