@@ -69,13 +69,13 @@ const Leaderboard = () => {
         {/* Table */}
         <div className="p-4">
           <table className="w-full">
-            <thead>
+            {/* <thead>
               <tr className="border-b border-gray-200">
                 <th className="text-left py-3 px-4 text-gray-600 font-semibold">#</th>
                 <th className="text-left py-3 px-4 text-gray-600 font-semibold">User</th>
                 <th className="text-right py-3 px-4 text-gray-600 font-semibold">Score</th>
               </tr>
-            </thead>
+            </thead> */}
             <tbody>
               {data && data.length > 0 ? (
                 data.map((item, index) => (
