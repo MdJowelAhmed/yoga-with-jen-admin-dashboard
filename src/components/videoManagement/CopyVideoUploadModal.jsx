@@ -352,18 +352,12 @@ const VideoUploadModal = ({
       setUploadStatus(
         `Uploading ${fileType}: ${fileProgress}% (${chunkIndex + 1}/${totalChunks} chunks)`,
       );
-
-      console.log(`✓ Chunk ${chunkIndex + 1}/${totalChunks} uploaded`);
     }
 
-    console.log(
-      `✓ All ${fileType} chunks sent. Waiting for backend finalization...`,
-    );
 
     setUploadStatus(`Finalizing ${fileType} on server...`);
     await sleep(POST_UPLOAD_BUFFER);
 
-    console.log(`✓ ${fileType} upload complete and finalized`);
   };
 
   // NEW: Verify upload status function
@@ -387,14 +381,12 @@ const VideoUploadModal = ({
         const result = await response.json();
 
         if (result.data?.ready) {
-          console.log(`✅ Verification passed on attempt ${attempt}`);
+        
           return result.data;
         }
 
         if (attempt < maxRetries) {
-          console.log(
-            `Verification not ready, retrying in 3s... (${attempt}/${maxRetries})`,
-          );
+        
           await sleep(15000);
         }
       } catch (error) {
@@ -417,7 +409,7 @@ const VideoUploadModal = ({
     // STEP 1: Verify files are ready
     try {
       const verification = await verifyUploadStatus(uploadIdRef.current, 5);
-      console.log("✅ Backend confirmed all files ready:", verification);
+      
     } catch (error) {
       message.error(error.message);
       throw error;
@@ -460,20 +452,16 @@ const VideoUploadModal = ({
 
         // Handle 409 Conflict - already processing
         if (response.status === 409) {
-          console.log(
-            `[Attempt ${attempt}] Upload already processing, waiting...`,
-          );
+         
 
           if (attempt < maxRetries) {
-            const waitTime = 10000 * attempt; // 10s, 20s, 30s
-            console.log(`Waiting ${waitTime}ms before checking status...`);
+            const waitTime = 10000 * attempt; 
             await sleep(waitTime);
 
             // Check if processing completed
             try {
               const status = await verifyUploadStatus(uploadIdRef.current, 1);
               if (status.processed) {
-                console.log("Upload completed by another process");
                 setOverallProgress(100);
                 return { alreadyProcessed: true };
               }
@@ -493,15 +481,12 @@ const VideoUploadModal = ({
             result.message?.includes("already uploaded") ||
             result.data?.alreadyProcessed
           ) {
-            console.log("Upload already processed");
             setOverallProgress(100);
             return { alreadyProcessed: true };
           }
 
           throw new Error(result.message || `HTTP ${response.status}`);
         }
-
-        console.log("✅ Complete upload successful:", result);
         setOverallProgress(100);
         return result.data;
       } catch (error) {
@@ -515,7 +500,6 @@ const VideoUploadModal = ({
 
         if (attempt < maxRetries) {
           const delay = 5000 * attempt;
-          console.log(`Retrying in ${delay}ms...`);
           await sleep(delay);
         } else {
           throw error;

@@ -69,7 +69,6 @@ export const uploadToBunny = async (file, folder = "") => {
     formData.append("file", file);
 
     // Log for debugging
-    console.log("Uploading to Bunny.net:", uploadPath, file.name, file.type);
 
     const response = await axios({
       method: "PUT",
@@ -83,14 +82,12 @@ export const uploadToBunny = async (file, folder = "") => {
         const percentCompleted = Math.round(
           (progressEvent.loaded * 100) / progressEvent.total
         );
-        console.log(`Upload progress: ${percentCompleted}%`);
       },
     });
 
     // Handle successful upload
     if (response.status === 200 || response.status === 201) {
       const fileUrl = `${BUNNY_CONFIG.cdnUrl}${uploadPath}`;
-      console.log("File uploaded successfully to Bunny.net:", fileUrl);
       return fileUrl;
     } else {
       throw new Error(`Upload failed with status: ${response.status}`);

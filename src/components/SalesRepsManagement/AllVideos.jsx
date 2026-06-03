@@ -54,7 +54,6 @@
 
 // const AllVideos = () => {
 //   const { categoryId } = useParams();
-//   console.log(categoryId);
 
 //   // Modal and editing states
 //   const [isFormModalVisible, setIsFormModalVisible] = useState(false);
@@ -93,7 +92,6 @@
 //     page: currentPage,
 //     limit: pageSize,
 //   });
-//   console.log("category videos", data);
 //   const { data: categoryData } = useGetCategoryQuery();
 //   const categories = categoryData?.data || [];
 
@@ -113,7 +111,6 @@
 
 //   const { data: allVideosData, isLoading: allVideosLoading } =
 //     useGetAllVideosQuery(queryParams);
-//   console.log("all videos", allVideosData);
 
 //   const TotalVideo = allVideosData?.data || [];
 //   const allVideosPagination = allVideosData?.pagination;
@@ -128,7 +125,6 @@
 //     limit: 10,
 //     totalPage: 1,
 //   };
-//   console.log(paginationData.total);
 //   // Use localVideos if available, otherwise use allVideos
 //   const videosToUse = localVideos.length > 0 ? localVideos : allVideos;
 

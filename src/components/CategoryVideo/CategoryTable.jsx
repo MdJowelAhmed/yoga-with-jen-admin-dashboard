@@ -17,7 +17,6 @@ const CategoryTable = ({
   onDelete, // Make sure this is passed as a prop
   onViewVideos, // New prop for viewing videos
 }) => {
-  console.log(categories)
 
   const columns = [
     {

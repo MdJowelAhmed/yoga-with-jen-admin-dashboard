@@ -34,7 +34,6 @@ export default function LoginCredentials() {
     useToggleBackUpAdminStatusMutation();
 
   const loginCredentials = data?.data || [];
-  console.log("Login Credentials:", loginCredentials);
 
   // const handleStatusChange = async (record, checked) => {
   //   try {

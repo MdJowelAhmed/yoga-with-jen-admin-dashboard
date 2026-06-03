@@ -79,20 +79,17 @@ const libraryPagination = allVideosData?.pagination || {
   const { data: videoDetails } = useCourserVideoDetailsQuery(editingId, {
     skip: !editingId,
   });
-console.log("videoDetails:", videosData);
   const [deleteVideoByCategoryANdSubCategory] = useDeleteVideoByCategoryANdSubCategoryMutation();
   const [updateVideoStatus] = useUpdateVideoStatusMutation();
   const [updateVideoOrder] = useUpdateVideoOrderMutation();
   const [videoAddInCategory] = useVideoAddInCategoryMutation();
 
   const videos = videosData?.data || [];
-  console.log("videos:", videos);
   const paginationData = videosData?.pagination || {
     total: videosData?.meta?.total || 0,
     current: videosData?.meta?.currentPage || 1,
     pageSize: videosData?.meta?.perPage || 10,
   };
-console.log("paginationData:333",paginationData)
   // Sort videos by serial number and update local state
   useEffect(() => {
     if (videos.length > 0) {
@@ -128,7 +125,6 @@ console.log("paginationData:333",paginationData)
   const handleUpdateOrder = async (orderData) => {
     try {
       const res = await updateVideoOrder(orderData).unwrap();
-      console.log(res);
 
       message.success("Video order updated successfully!");
       setHasOrderChanges(false);
@@ -194,7 +190,6 @@ console.log("paginationData:333",paginationData)
         subCategoryId: subCategoryId,
       };
 
-      console.log("Single video data:", scheduleData);
       await videoAddInCategory(scheduleData);
       message.success("Video added to subcategory successfully!");
       
@@ -221,7 +216,6 @@ console.log("paginationData:333",paginationData)
         subCategoryId: subCategoryId,
       };
 
-      console.log("Multiple videos data:", scheduleData);
       await videoAddInCategory(scheduleData);
       message.success(
         `${selectedVideos.length} videos added to subcategory successfully!`

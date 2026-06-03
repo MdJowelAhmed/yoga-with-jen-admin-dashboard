@@ -193,7 +193,6 @@ const CategoryContainer = () => {
         _id: category._id,
         serial: category.serial,
       }));
-      console.log(categoryOrder);
       await updateCategoryOrder(categoryOrder).unwrap();
       message.success("Category order updated successfully!");
       setHasOrderChanges(false);

@@ -25,7 +25,6 @@ import { FaLocationDot } from "react-icons/fa6";
 const { Title, Text } = Typography;
 
 const UserDetailsModal = ({ visible, onClose, userDetails }) => {
-  console.log(userDetails);
   if (!userDetails) return null;
 
   // Helper function to format dates

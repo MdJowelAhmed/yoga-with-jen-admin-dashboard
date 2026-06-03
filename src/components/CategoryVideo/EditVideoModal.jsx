@@ -27,8 +27,6 @@ const EditVideoModal = ({
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [fileList, setFileList] = useState([]);
   
-  console.log(currentVideo)
-
   // Initialize form data when modal opens or currentVideo changes
   useEffect(() => {
     if (visible && currentVideo) {

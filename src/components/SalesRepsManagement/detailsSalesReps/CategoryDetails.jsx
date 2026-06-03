@@ -18,13 +18,10 @@ import SubCategoryTable from "./SubCategoryTable";
 const SubCategoryManagement = () => {
   const navigate = useNavigate();
   const { categoryId } = useParams();
-  // console.log("Category ID:", categoryId);
-  // console.log("subcategory");
 
   const [subCategoryModalVisible, setSubCategoryModalVisible] = useState(false);
   const [editingSubCategory, setEditingSubCategory] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  console.log(selectedCategory);
 
 
   // Fetch category and subcategory data
@@ -35,7 +32,6 @@ const SubCategoryManagement = () => {
 
   const { data: subCategoryData, isLoading: subCategoryLoading } =
     useGetSubCategoriesQuery();
-  console.log(subCategoryData);
   // API mutations for subcategories
   const [createSubCategory] = useCreateSubCategoryMutation();
   const [updateSubCategory] = useUpdateSubCategoryMutation();
@@ -87,7 +83,6 @@ const SubCategoryManagement = () => {
 
       if (!editingSubCategory) {
         subCategoryData.categoryId = selectedCategory._id;
-        console.log("Adding categoryId:", selectedCategory._id);
       }
 
       if (!editingSubCategory && !subCategoryData.categoryId) {
@@ -96,22 +91,16 @@ const SubCategoryManagement = () => {
         return;
       }
 
-      console.log("Final subCategoryData:", subCategoryData);
 
       formData.append("data", JSON.stringify(subCategoryData));
 
       if (thumbnailFile) {
-        console.log("Appending thumbnail file:", thumbnailFile.name);
         formData.append("thumbnail", thumbnailFile);
       } else if (!editingSubCategory) {
         message.error("Please upload a thumbnail image.");
         return;
       }
 
-      console.log("FormData contents:");
-      for (let [key, value] of formData.entries()) {
-        console.log(key + ":", value);
-      }
 
       if (editingSubCategory && editingSubCategory._id) {
         const response = await updateSubCategory({
@@ -119,11 +108,9 @@ const SubCategoryManagement = () => {
           updatedData: formData,
         }).unwrap();
 
-        console.log("Update subcategory response:", response);
         message.success("Sub-category updated successfully!");
       } else {
         const response = await createSubCategory(formData).unwrap();
-        console.log("Create subcategory response:", response);
         message.success("Sub-category created successfully!");
       }
 

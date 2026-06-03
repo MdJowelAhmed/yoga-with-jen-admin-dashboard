@@ -107,9 +107,7 @@ const {
   { skip: !id }
 );
 
-console.log("challengeVideos:", challengeVideos);
   const challengeVideo = challengeVideos?.data || [];
-  console.log("challengeVideo:", challengeVideo);
 
   // New state for modal table pagination
   const [modalCurrentPage, setModalCurrentPage] = useState(1);
@@ -125,9 +123,8 @@ console.log("challengeVideos:", challengeVideos);
     useGetSingleDailyChallengeQuery(id, {
       skip: !!challenge,
     });
-  console.log("challengeData:", challengeData);
+  
   const challengeDetails = challenge || challengeData?.data;
-  console.log("challengeDetails:", challengeDetails);
 
   // Get all videos from library with pagination parameters
   const { data: allVideosData, isLoading: allVideosLoading } =
@@ -135,7 +132,6 @@ console.log("challengeVideos:", challengeVideos);
       { name: "limit", value: modalPageSize },
       { name: "page", value: modalCurrentPage },
     ]);
-  console.log("allVideosData:", allVideosData);
   const allVideos = allVideosData?.data || [];
   const allVideosPagination = allVideosData?.pagination || {
     total: allVideosData?.pagination?.total || 0,
@@ -482,7 +478,6 @@ console.log("challengeVideos:", challengeVideos);
         ...(schedulingDate && { publishAt: schedulingDate.toISOString() }),
       };
 
-      console.log("Single video scheduling data:", scheduleData);
 
       await scheduleVideoRotation(scheduleData);
       message.success("Video scheduled successfully!");
@@ -520,8 +515,7 @@ console.log("challengeVideos:", challengeVideos);
         ...(schedulingDate && { publishAt: schedulingDate.toISOString() }),
       };
 
-      console.log("Multiple videos scheduling data:", scheduleData);
-
+      
       await scheduleVideoRotation(scheduleData);
       message.success(
         `${selectedVideos.length} videos scheduled successfully!`

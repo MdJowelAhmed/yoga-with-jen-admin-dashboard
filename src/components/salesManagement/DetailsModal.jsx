@@ -3,7 +3,7 @@ import { Modal } from "antd";
 import { imageUrl } from "../../redux/api/baseApi";
 
 const DetailsModal = ({ isVisible, onClose, orderData }) => {
-    console.log(orderData?.image)
+
   return (
     <Modal 
     centered

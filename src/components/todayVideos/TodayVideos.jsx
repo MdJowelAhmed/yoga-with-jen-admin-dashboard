@@ -44,12 +44,12 @@ const TodayVideos = () => {
 
   const { data: allVideosData } = useGetAllVideosQuery();
   const allVideos = allVideosData?.data || [];
-  // console.log(allVideos)
+      
 
 
   const { data: challengesData, isLoading: challengesLoading, refetch: refetchChallenges } = useGetDailyChallengeQuery();
   const challenges = challengesData?.data || [];
-  console.log(challenges)
+
 
 
   // Update local challenges and sorted challenges when challenges changes

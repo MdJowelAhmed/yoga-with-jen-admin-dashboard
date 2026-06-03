@@ -93,12 +93,7 @@ const VideoManagement = () => {
   } = useVideoManagement();
   const [updateVideo, { isLoading }] =
     useUpdateVideoINCategoryAndSubcategoryMutation();
-  console.log(subCategoryId);
-  // console.log("categoryId:", categoryId);
-  // console.log(categories);
-  console.log(localVideos);
-  console.log("paginationData:", paginationData);
-  console.log("Total video",TotalVideo);
+      
 
   // Row selection configuration for schedule modal
   const rowSelection = {

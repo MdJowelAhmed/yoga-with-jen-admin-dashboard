@@ -12,10 +12,7 @@ const SubCategoryTable = ({
   onDelete,
   categoryId,
 }) => {
-  console.log("subCategories:", subCategories);
-  console.log("categoryId:", categoryId);
-
-
+                
   const columns = [
     {
       title: "SL",

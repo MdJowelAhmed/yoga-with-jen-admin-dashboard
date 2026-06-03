@@ -57,7 +57,6 @@ const { Option } = Select;
 
 const CategoryVideos = () => {
   const { categoryId } = useParams();
-  console.log(categoryId);
 
   // Modal and editing states
   const [isFormModalVisible, setIsFormModalVisible] = useState(false);
@@ -71,7 +70,6 @@ const CategoryVideos = () => {
 
   // Drag and drop states
   const [localVideos, setLocalVideos] = useState([]);
-  console.log("localVideos", localVideos);
   const [hasOrderChanges, setHasOrderChanges] = useState(false);
   const [viewMode, setViewMode] = useState("table"); // "table" or "drag"
 
@@ -108,7 +106,6 @@ useEffect(() => {
     page: currentPage,
     limit: pageSize,
   });
-  console.log("category videos", data);
   const { data: categoryData } = useGetCategoryQuery();
   const categories = categoryData?.data || [];
 
@@ -128,7 +125,6 @@ useEffect(() => {
 
   const { data: allVideosData, isLoading: allVideosLoading } =
     useGetAllVideosQuery(queryParams);
-  console.log("all videos", allVideosData);
 
   const TotalVideo = allVideosData?.data || [];
   const allVideosPagination = allVideosData?.pagination;
@@ -143,7 +139,6 @@ useEffect(() => {
     limit: 10,
     totalPage: 1,
   };
-  console.log(paginationData.total);
   // Use localVideos if available, otherwise use allVideos
   const videosToUse = localVideos.length > 0 ? localVideos : allVideos;
 
@@ -158,7 +153,6 @@ useEffect(() => {
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const paginatedVideos = filteredVideos.slice(startIndex, endIndex);
-  console.log(paginatedVideos);
   // const totalVideos = paginatedVideos;
 
   // Fetch single video data when editingId is set
@@ -166,7 +160,6 @@ useEffect(() => {
     skip: !editingId,
   });
   const videoDetails = videoDetail?.data;
-  console.log(videoDetails);
   const [deleteCategoryVideo] = useDeleteCategoryVideoMutation();
   const [updateVideoStatus] = useUpdateVideoStatusMutation();
   const [updateVideoINCategoryAndSubcategory, { isLoading }] =
@@ -209,7 +202,6 @@ useEffect(() => {
     setModalCurrentPage(1);
   }, [modalSearchTerm, modalCategoryFilter]);
 
-  console.log("Filtered Videos:", paginatedVideos);
 
   // VideoCard component for drag and drop view
   const VideoCard = ({
@@ -409,7 +401,6 @@ useEffect(() => {
         categoryId: categoryId,
       };
 
-      console.log("Single video data:", scheduleData);
       await videoAddInCategory(scheduleData);
       message.success("Video added to category successfully!");
     } catch (error) {
@@ -432,7 +423,6 @@ useEffect(() => {
         categoryId: categoryId,
       };
 
-      console.log("Multiple videos data:", scheduleData);
       await videoAddInCategory(scheduleData);
       message.success(
         `${selectedVideos.length} videos added to category successfully!`

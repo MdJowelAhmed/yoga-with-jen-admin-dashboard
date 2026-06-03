@@ -11,7 +11,7 @@ import moment from "moment";
 
 const OrderTable = () => {
   const { data } = useGetRecentUsersQuery()
-  console.log(data)
+
 
 
   const columns = [

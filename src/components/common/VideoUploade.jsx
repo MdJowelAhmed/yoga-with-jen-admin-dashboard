@@ -67,7 +67,6 @@ const VideoUploadSystem = ({ pageType, apiHooks, additionalButtons = <></> }) =>
     isLoading: isLoadingItems,
     refetch,
   } = useGetAllQuery(queryParams);
-console.log(itemsData)
   // Fetch single item for details and edit form
   const { data: itemDetails, isLoading: isLoadingDetails } = useGetByIdQuery(
     selectedItemId,
@@ -148,7 +147,6 @@ console.log(itemsData)
           if (pageType === "daily-inspiration") {
             // Make sure we're using the correct parameter structure for daily inspiration
             updateParams.dailyInspirationData = formData;
-            console.log("Updating daily inspiration with:", updateParams);
           } else if (pageType === "coming-soon") {
             updateParams.comingSoonData = formData;
           } else {

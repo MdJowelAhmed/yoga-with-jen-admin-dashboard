@@ -69,9 +69,6 @@ const Quotationmanagement = () => {
   const quotationsData = quotations?.data;
   const paginationInfo = quotations?.pagination;
 
-  console.log("quotationsData", quotationsData);
-  console.log("paginationInfo", paginationInfo);
-
   // Format data for table
   const formattedData = quotationsData?.map((item, index) => ({
     key: item._id || index.toString(),

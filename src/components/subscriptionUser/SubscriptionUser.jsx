@@ -16,7 +16,7 @@ const SubscriptionManagementTable = () => {
   // API hook
   const { data: subscriptionsData, isLoading } =
     useGetAllSubscriptionsQuery(filters);
-  console.log(subscriptionsData);
+
 
   // Update filters when search or pagination changes
   useEffect(() => {

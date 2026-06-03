@@ -62,7 +62,6 @@ export default function SubscriptionPackagesManagement() {
     useUpdateSubscriptionPackageMutation();
   const [deletePackage] = useDeleteSubscriptionPackageMutation();
 
-  // console.log(subscriptionPackages);
 
   // Form validation function
   const isFormValid = () => {
@@ -259,7 +258,6 @@ export default function SubscriptionPackagesManagement() {
           pkg.subscriptionType.toLowerCase() === selectedType.toLowerCase()
       );
 
-  // console.log(filteredPackages);
   // Filter menu items
   const typeFilterMenu = (
     <Menu>
