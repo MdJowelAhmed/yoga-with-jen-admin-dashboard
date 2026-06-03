@@ -208,12 +208,9 @@ const Header = () => {
         setUnreadCount(actualUnreadCount);
       }
     }
-    console.log("🔔 Current notifications:", notifications);
-    console.log("🔢 Current unread count:", unreadCount);
   }, [notifications, unreadCount]);
 
   const handleNotificationRead = () => {
-    console.log("📖 Marking all notifications as read");
     const readNotifications = notifications.map((n) => ({
       ...n,
       read: true, // Use 'read' property to match API response
@@ -221,7 +218,6 @@ const Header = () => {
     }));
     setNotifications(readNotifications);
     setUnreadCount(0);
-    console.log("📖 After marking read:", readNotifications);
   };
 
   const userMenuContent = (

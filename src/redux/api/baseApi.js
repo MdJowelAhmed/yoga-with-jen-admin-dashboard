@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getBaseUrl } from "./baseUrl";
 
-export const isProduction = true // true for production, false for development
+export const isProduction =
+  import.meta.env.VITE_IS_PRODUCTION === "true";
 
 export const api = createApi({
   reducerPath: "api",

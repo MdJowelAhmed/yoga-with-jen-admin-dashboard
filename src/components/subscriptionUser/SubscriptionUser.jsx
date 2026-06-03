@@ -123,11 +123,20 @@ const SubscriptionManagementTable = () => {
         <div>
           <div className="text-sm">
             <strong>Start:</strong>{" "}
-            {dayjs(record.currentPeriodStart).format("DD MMM YYYY")}
+            {record.currentPeriodStart
+              ? dayjs(record.currentPeriodStart).format("DD MMM YYYY")
+              : record.status === "canceled"
+              ? "Subscription Canceled"
+              : "Not Active Yet"}
           </div>
+    
           <div className="text-sm">
             <strong>End:</strong>{" "}
-            {dayjs(record.currentPeriodEnd).format("DD MMM YYYY")}
+            {record.currentPeriodEnd
+              ? dayjs(record.currentPeriodEnd).format("DD MMM YYYY")
+              : record.status === "canceled"
+              ? "Subscription Canceled"
+              : "Not Active Yet"}
           </div>
         </div>
       ),
