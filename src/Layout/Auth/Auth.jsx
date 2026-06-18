@@ -32,7 +32,7 @@ const Auth = () => {
 
   return (
     <div
-      className="w-full flex items-center justify-between relative"
+      className="w-full flex items-center justify-end relative"
       style={{ height: "100vh" }}
     >
       {/* Background image */}
@@ -52,7 +52,7 @@ const Auth = () => {
       ></div>
 
       {/* Left side - Dynamic image */}
-      <div
+      {/* <div
         className="w-1/2 h-full hidden md:flex items-center justify-center"
         style={{
           position: "relative",
@@ -69,7 +69,7 @@ const Auth = () => {
             padding: "20px",
           }}
         />
-      </div>
+      </div> */}
 
       {/* Right side - Auth form */}
       <div className="md:w-1/2 w-full flex justify-end px-4">
@@ -84,7 +84,7 @@ const Auth = () => {
             position: "relative",
             right: 100,
             zIndex: 1,
-            border: "2px solid #A92C2C",
+            // border: "2px solid #A92C2C",
             backdropFilter: "blur(10px)",
           }}
           className="shadow-xl"

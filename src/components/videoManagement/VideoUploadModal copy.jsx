@@ -381,7 +381,7 @@ const VideoUploadModal = ({
         videoId: videoId,
         ...(thumbnailUrl && { thumbnailUrl }),
       };
-console.log(videoData);
+
       setUploadStatus("Saving metadata...");
 
       if (isEditMode) {

@@ -30,7 +30,6 @@ ChartJS.register(
 const Home = () => {
 
   const { data, isLoading } = useGetStatisticsQuery()
-  console.log(data)
 
 
 
