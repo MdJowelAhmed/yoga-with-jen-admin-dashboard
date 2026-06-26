@@ -48,7 +48,7 @@ const contactUsApi = api.injectEndpoints({
     getContactDetails: builder.query({
       query: (contactId) => {
         return {
-          url: `/contacts/${contactId}`,
+          url: `/admin/contact/single-contact/${contactId}`,
           method: "GET",
         };
       },
@@ -60,6 +60,38 @@ const contactUsApi = api.injectEndpoints({
       providesTags: (result, error, id) => [{ type: "Contact", id }],
     }),
 
+    replyToContact: builder.mutation({
+      query: ({ id, message }) => {
+        return {
+          url: `/admin/contact/reply/${id}`,
+          method: "POST",
+          body: { reply: message },
+        };
+      },
+      invalidatesTags: ["Contact"],
+    }),
+
+
+
+    deleteContact: builder.mutation({
+      query: (id) => {
+        return {
+          url: `/admin/contact/delete/${id}`,
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: ["Contact"],
+    }),
+    deleteAllContacts: builder.mutation({
+      query: () => {
+        return {
+          url: `/admin/contact/delete-all`,
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: ["Contact"],
+    }),
+
  
     
   }),
@@ -68,5 +100,8 @@ const contactUsApi = api.injectEndpoints({
 export const {
   useGetAllContactsQuery,
   useGetContactDetailsQuery,
- 
+  useReplyToContactMutation,
+  useDeleteContactReplyMutation,
+  useDeleteContactMutation,
+  useDeleteAllContactsMutation,
 } = contactUsApi;
