@@ -17,6 +17,7 @@ import moment from "moment";
 import { getImageUrl } from "../common/imageUrl";
 
 const { TextArea } = Input;
+const MAX_IMAGE_SIZE_MB = 2;
 
 const TodayVideos = () => {
   const navigate = useNavigate();
@@ -200,6 +201,22 @@ const TodayVideos = () => {
     }
   }, [challengeModalVisible, editingChallenge, challengeForm]);
 
+  const beforeImageUpload = (file) => {
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("Please upload an image file.");
+      return Upload.LIST_IGNORE;
+    }
+
+    const isLessThan2MB = file.size / 1024 / 1024 <= MAX_IMAGE_SIZE_MB;
+    if (!isLessThan2MB) {
+      message.error(`Image must be ${MAX_IMAGE_SIZE_MB}MB or smaller.`);
+      return Upload.LIST_IGNORE;
+    }
+
+    return false;
+  };
+
   // Handle image file change
   const handleImageChange = (info) => {
     if (info.file) {
@@ -243,7 +260,7 @@ const TodayVideos = () => {
         <div className="w-full h-48 bg-gray-200 rounded mb-2 flex items-center justify-center">
           <div className="text-center text-gray-500">
             <PictureOutlined style={{ fontSize: '48px', marginBottom: '8px' }} />
-            <div>No image selected</div>
+            <div>Please select an image and maximum size is {MAX_IMAGE_SIZE_MB}MB</div>
           </div>
         </div>
       );
@@ -593,12 +610,16 @@ const handleStatusToggle = async (challengeId, currentStatus) => {
             <TextArea rows={4} placeholder="Enter challenge description" />
           </Form.Item>
 
-          <Form.Item name="image" label="Challenge Image">
+          <Form.Item
+            name="image"
+            label="Challenge Image"
+            // extra={`Maximum file size: ${MAX_IMAGE_SIZE_MB}MB`}
+          >
             <div className="bg-gray-100 p-1 rounded">
               {renderImagePreview()}
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <Upload
-                  beforeUpload={() => false}
+                  beforeUpload={beforeImageUpload}
                   onChange={handleImageChange}
                   maxCount={1}
                   showUploadList={false}
@@ -606,13 +627,9 @@ const handleStatusToggle = async (challengeId, currentStatus) => {
                 >
                   <Button icon={<UploadOutlined />}>Select Image</Button>
                 </Upload>
-                {/* <Button
-                  icon={<ReloadOutlined />}
-                  size="small"
-                  shape="circle"
-                  onClick={resetImage}
-                  title="Reset image"
-                /> */}
+                {/* <span className="text-xs text-gray-500">
+                  Max {MAX_IMAGE_SIZE_MB}MB
+                </span> */}
               </div>
             </div>
           </Form.Item>

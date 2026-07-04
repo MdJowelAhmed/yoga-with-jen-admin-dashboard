@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Select, Button, Upload } from "antd";
+import { Modal, Form, Input, Select, Button, Upload, message } from "antd";
 import { UploadOutlined, ReloadOutlined, PictureOutlined } from "@ant-design/icons";
 import { getImageUrl } from "../common/imageUrl";
 import { useParams } from "react-router-dom";
 import Thumbnail from "../videoManagement/Thumbnail";
+
+const MAX_IMAGE_SIZE_MB = 2;
 
 const CategoryForm = ({ visible, onCancel, onSubmit, initialValues }) => {
   const [form] = Form.useForm();
@@ -11,6 +13,22 @@ const CategoryForm = ({ visible, onCancel, onSubmit, initialValues }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+
+  const beforeUpload = (file) => {
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("Please upload an image file.");
+      return Upload.LIST_IGNORE;
+    }
+
+    const isLessThan2MB = file.size / 1024 / 1024 <= MAX_IMAGE_SIZE_MB;
+    if (!isLessThan2MB) {
+      message.error(`Image must be ${MAX_IMAGE_SIZE_MB}MB or smaller.`);
+      return Upload.LIST_IGNORE;
+    }
+
+    return false;
+  };
 
   useEffect(() => {
     if (visible) {
@@ -93,7 +111,7 @@ const CategoryForm = ({ visible, onCancel, onSubmit, initialValues }) => {
         <div className="w-full h-48 bg-gray-200 rounded mb-2 flex items-center justify-center">
           <div className="text-center text-gray-500">
             <PictureOutlined style={{ fontSize: '48px', marginBottom: '8px' }} />
-            <div>No image selected</div>
+            <div>Please select an image and maximum size is {MAX_IMAGE_SIZE_MB}MB</div>
           </div>
         </div>
       );
@@ -166,7 +184,7 @@ const CategoryForm = ({ visible, onCancel, onSubmit, initialValues }) => {
             {renderImagePreview()}
             <div className="flex justify-between">
               <Upload
-                beforeUpload={() => false}
+                beforeUpload={beforeUpload}
                 onChange={handleThumbnailChange}
                 maxCount={1}
                 showUploadList={false}
