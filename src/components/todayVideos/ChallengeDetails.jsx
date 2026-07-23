@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import {
   useDeleteDailyChallegeMutation,
@@ -46,6 +46,7 @@ import moment from "moment";
 import VideoDetailsModal from "../retailerManagement/VideoDetailsModal";
 import EditVideoModal from "../SalesRepsManagement/EditVideoModal";
 import Thumbnail from "../videoManagement/Thumbnail";
+import DebouncedSearch from "../common/DebouncedSearch";
 
 const { TabPane } = Tabs;
 
@@ -76,7 +77,7 @@ const ChallengeDetails = () => {
   const [hasOrderChanges, setHasOrderChanges] = useState(false);
   const [viewMode, setViewMode] = useState("table");
   const [isFormModalVisible, setIsFormModalVisible] = useState(false);
-
+  const [searchTerm, setSearchTerm] = useState("");
 
 
   // State for pagination - Updated for both tables
@@ -93,10 +94,25 @@ const ChallengeDetails = () => {
       setCurrentPage(1); // Reset to first page
     }
   }, [viewMode]);
-const queryParams = [
-  { name: "limit", value: pageSize },
-  { name: "page", value: currentPage },
-];
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  const handleSearch = (value) => {
+    setSearchTerm(value || "");
+  };
+
+const queryParams = useMemo(() => {
+  const params = [
+    { name: "limit", value: pageSize },
+    { name: "page", value: currentPage },
+  ];
+  if (searchTerm) {
+    params.push({ name: "searchTerm", value: searchTerm });
+  }
+  return params;
+}, [pageSize, currentPage, searchTerm]);
 
 const {
   data: challengeVideos,
@@ -669,23 +685,30 @@ const {
       </div>
 
       {/* Action buttons */}
-      <div className="mb-6 flex justify-end">
-        <div>
+      <div className="mb-6 flex justify-between">
+        <DebouncedSearch
+          placeholder="Search videos..."
+          onChange={handleSearch}
+          delay={300}
+        />
+       <div className="flex items-center gap-2">
+       
           <button
             onClick={() => setViewMode(viewMode === "table" ? "drag" : "table")}
             className="py-2 rounded-md px-4 border-none mr-2 bg-primary text-white hover:bg-secondary"
           >
             {viewMode === "table" ? "Do Shuffle" : "Table View"}
           </button>
-        </div>
+       
 
         <Button
           onClick={() => setSchedulingModalVisible(true)}
           icon={<CalendarOutlined />}
-          className="h-10 bg-[#CA3939] text-white border-none"
+          className="h-10 bg-[#CA3939] hover:bg-[#CA3939]/80 text-white border-none"
         >
           Videos Library
         </Button>
+       </div>
       </div>
 
       {/* Challenge Videos - either in table or drag-and-drop mode */}

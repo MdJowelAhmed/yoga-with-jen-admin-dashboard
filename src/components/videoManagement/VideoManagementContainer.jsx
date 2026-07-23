@@ -15,6 +15,7 @@ import {
   PlayCircleOutlined,
 } from "@ant-design/icons";
 import GradientButton from "../common/GradiantButton";
+import DebouncedSearch from "../common/DebouncedSearch";
 import {
   useGetAllVideosQuery,
   useDeleteVideoMutation,
@@ -362,6 +363,7 @@ const VideoManagementContainer = () => {
 
   // Filters and pagination
   const [statusFilter, setStatusFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -369,6 +371,9 @@ const VideoManagementContainer = () => {
   const queryParams = [];
   if (statusFilter !== "all")
     queryParams.push({ name: "status", value: statusFilter });
+  if (searchTerm) {
+    queryParams.push({ name: "searchTerm", value: searchTerm });
+  }
   queryParams.push({ name: "page", value: currentPage });
   queryParams.push({ name: "limit", value: pageSize });
 
@@ -407,10 +412,14 @@ const VideoManagementContainer = () => {
     }
   }, [editingId, videoDetails]);
 
-  // Reset page on filter change
+  // Reset page on filter / search change
   useEffect(() => {
     setCurrentPage(1);
-  }, [statusFilter]);
+  }, [statusFilter, searchTerm]);
+
+  const handleSearch = (value) => {
+    setSearchTerm(value || "");
+  };
 
   // Show form modal for add or edit
   const showFormModal = (record = null) => {
@@ -584,11 +593,17 @@ const VideoManagementContainer = () => {
 
   return (
     <div>
-      <div className="flex justify-end gap-6 mb-6">
+      <div className="flex justify-between items-center gap-6 mb-6">
+        <DebouncedSearch
+          placeholder="Search videos..."
+          onChange={handleSearch}
+          delay={300}
+        />
+
         <button
           type="primary"
           onClick={() => showFormModal()}
-          className="h-[45px] px-10  rounded-md bg-primary text-white "
+          className="h-[45px] px-10 rounded-md bg-primary text-white"
           icon={<PlusOutlined />}
         >
           Upload New Video

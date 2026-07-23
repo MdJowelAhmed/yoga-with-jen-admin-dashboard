@@ -123,7 +123,13 @@ const Sidebar = () => {
       key: "/today-video",
       icon: renderIcon(Challenge, "/today-video"),
 
-      label: <Link to="/today-video">Challenge management</Link>,
+      label: <Link to="/today-video">Today's Video</Link>,
+    },
+    {
+      key: "/challenge-management",
+      icon: renderIcon(Challenge, "/challenge-management"),
+
+      label: <Link to="/challenge-management">Challenge management</Link>,
     },
     {
       key: "/daily-inspiration",

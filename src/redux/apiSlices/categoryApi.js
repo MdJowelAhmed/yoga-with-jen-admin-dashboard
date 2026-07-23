@@ -74,14 +74,18 @@ const categorySlice = api.injectEndpoints({
     }),
 
 getByCategoryAllVideos: builder.query({
-  query: ({ id, page = 1, limit = 10 }) => {
+  query: ({ id, page = 1, limit = 10, searchTerm }) => {
+    const params = {
+      limit: limit,
+      page: page,
+    };
+    if (searchTerm) {
+      params.searchTerm = searchTerm;
+    }
     return {
       url: `/admin/category/category-all-videos/${id}`,
       method: "GET",
-      params: {
-        limit: limit,
-        page: page,
-      },
+      params,
     };
   },
   providesTags: ["Categories"],

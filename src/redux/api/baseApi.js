@@ -28,6 +28,7 @@ export const api = createApi({
     "DailyVideo",
     "DailyChallenge",
     "DailyInspiration",
+    "TodayPlaylist",
     "Admin",
     "Notification",
     "PushNotification",

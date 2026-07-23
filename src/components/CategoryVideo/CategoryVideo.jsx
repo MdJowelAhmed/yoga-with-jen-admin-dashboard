@@ -51,6 +51,7 @@ import { getVideoAndThumbnail } from "../common/imageUrl";
 import EditVideoModal from "./EditVideoModal";
 import VideoDetailsModal from "../videoManagement/VideoDetailsModal";
 import Thumbnail from "../videoManagement/Thumbnail";
+import DebouncedSearch from "../common/DebouncedSearch";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -76,6 +77,7 @@ const CategoryVideos = () => {
   // Filters and pagination for main table
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -105,6 +107,7 @@ useEffect(() => {
     id: categoryId,
     page: currentPage,
     limit: pageSize,
+    searchTerm: searchTerm || undefined,
   });
   const { data: categoryData } = useGetCategoryQuery();
   const categories = categoryData?.data || [];
@@ -181,10 +184,14 @@ useEffect(() => {
     }
   }, [editingId, videoDetails]);
 
-  // Reset page on filter change
+  // Reset page on filter / search change
   useEffect(() => {
     setCurrentPage(1);
-  }, [statusFilter, typeFilter]);
+  }, [statusFilter, typeFilter, searchTerm]);
+
+  const handleSearch = (value) => {
+    setSearchTerm(value || "");
+  };
 
   // Update local videos when allVideos changes
   useEffect(() => {
@@ -724,25 +731,12 @@ useEffect(() => {
         }
       `}</style>
 
-      <div className="flex justify-end gap-6 mb-6">
-        {/* <Space size="small" className="flex gap-4">
-          <Dropdown
-            overlay={statusMenu}
-            trigger={["click"]}
-            placement="bottomLeft"
-          >
-            <Button
-              className="py-5 mr-2 text-white bg-red-600 hover:bg-red-800 hover:text-white hover:icon-black"
-              style={{ border: "none" }}
-            >
-              <Space>
-                <Filtering className="filtering-icon" />
-                <span className="filter-text">{getStatusDisplayText()}</span>
-                <DownOutlined />
-              </Space>
-            </Button>
-          </Dropdown>
-        </Space> */}
+      <div className="flex justify-between items-center gap-6 mb-6">
+      <DebouncedSearch
+          placeholder="Search videos..."
+          onChange={handleSearch}
+          delay={300}
+        />
 
         <Space>
           <button
@@ -861,11 +855,11 @@ useEffect(() => {
             pageSize: modalPageSize,
             total: allVideosPagination?.total,
             onChange: handleModalPaginationChange,
-            // showSizeChanger: true,
-            // showQuickJumper: true,
-            // pageSizeOptions: ['5', '10', '20', '50'],
-            // showTotal: (total, range) =>
-            //   `${range[0]}-${range[1]} of ${total} items`,
+            onShowSizeChange: handleModalPaginationChange,
+            showSizeChanger: true,
+            pageSizeOptions: ["10", "20", "50", "100"],
+            showTotal: (total, range) =>
+              `${range[0]}-${range[1]} of ${total} videos`,
           }}
           locale={{ emptyText: "No videos found" }}
           rowSelection={rowSelection}

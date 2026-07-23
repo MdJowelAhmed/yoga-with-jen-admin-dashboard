@@ -27,6 +27,7 @@ import CommingSoonVideoPage from "../components/comingSoon/CommingSoonVideoPage"
 import TodayVideos from "../components/todayVideos/TodayVideos";
 import ChallengeDetails from "../components/todayVideos/ChallengeDetails";
 import CourseDetailsVideoManagement from "../components/retailerManagement/CourseDetailsVideoManagement";
+import TodayVideoManagement from "../components/todayVideoManagement/TodayVideoManagement";
 
 import DailyInspirationPage from "../components/comingSoon/DailyInspiration";
 import PostManagementSystem from "../components/createPost/CreatePostManagement";
@@ -106,6 +107,10 @@ const router = createBrowserRouter([
       },
       {
         path: "/today-video",
+        element: <TodayVideoManagement />,
+      },
+      {
+        path: "/challenge-management",
         element: <TodayVideos />,
       },
       {
