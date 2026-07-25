@@ -19,6 +19,7 @@ import {
   CreatePost,
   DailyInspiration,
   Challenge,
+  todayVideos,
 } from "../../components/common/Svg";
 import image4 from "../../assets/image4.png"; // Logo image
 
@@ -121,7 +122,7 @@ const Sidebar = () => {
     },
     {
       key: "/today-video",
-      icon: renderIcon(Challenge, "/today-video"),
+      icon: renderIcon(todayVideos, "/today-video"),
 
       label: <Link to="/today-video">Today's Video</Link>,
     },

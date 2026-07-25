@@ -2,7 +2,6 @@ import { createBrowserRouter } from "react-router-dom";
 import Auth from "../Layout/Auth/Auth";
 import Main from "../Layout/Main/Main";
 import Home from "../Pages/Dashboard/Home";
-// import Banner from "../Pages/Dashboard/Banner";
 import AboutUs from "../Pages/Dashboard/AboutUs";
 import PrivacyPolicy from "../Pages/Dashboard/PrivacyPolicy";
 import TermsAndConditions from "../Pages/Dashboard/TermsAndCondition";
@@ -13,7 +12,6 @@ import VerifyOtp from "../Pages/Auth/VerifyOtp";
 import ResetPassword from "../Pages/Auth/ResetPassword";
 import NotFound from "../NotFound";
 import Notifications from "../Pages/Dashboard/Notifications";
-import SubCategory from "../Pages/Dashboard/SubCategory";
 import AdminProfile from "../Pages/Dashboard/AdminProfile/AdminProfile";
 import ViewSalesReps from "../components/SalesRepsManagement/detailsSalesReps/SubCategoryTable";
 import VideoManagement from "../components/SalesRepsManagement/detailsSalesReps/VideoManagement";
@@ -32,8 +30,6 @@ import TodayVideoManagement from "../components/todayVideoManagement/TodayVideoM
 import DailyInspirationPage from "../components/comingSoon/DailyInspiration";
 import PostManagementSystem from "../components/createPost/CreatePostManagement";
 
-
-// import PageManagement from "../Pages/Dashboard/LoginAndRegisterBG";
 import ContactManagement from "../components/contactus/ContactUsUser";
 
 import PrivateRoute from "./ProtectedRoute";
@@ -50,7 +46,6 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <PrivateRoute><Main /></PrivateRoute> ,
-    // element: <Main />,
     children: [
       {
         path: "/",
@@ -141,14 +136,6 @@ const router = createBrowserRouter([
         path: "/leaderboard",
         element: <Leaderboard />,
       },
-      // {
-      //   path: "/category",
-      //   element: <Category />,
-      // },
-      // {
-      //   path: "/login-register",
-      //   element: <PageManagement />,
-      // },
       {
         path: "/contactUs",
         element: <ContactManagement />,
@@ -157,10 +144,6 @@ const router = createBrowserRouter([
         path: "/subcription-user",
         element: <SubscriptionManagementTable />,
       },
-      // {
-      //   path: "/banner",
-      //   element: <Banner />,
-      // },
       {
         path: "/about-us",
         element: <AboutUs />,
@@ -176,10 +159,6 @@ const router = createBrowserRouter([
       {
         path: "/change-password",
         element: <ChangePassword />,
-      },
-      {
-        path: "/sub-category",
-        element: <SubCategory />,
       },
       {
         path: "/profile",

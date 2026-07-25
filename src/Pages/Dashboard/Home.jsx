@@ -113,7 +113,6 @@ const Home = () => {
 
       <div className=" mt-16">
         <OrderTable />
-        {/* <SalesLeaderBoard /> */}
       </div>
     </div>
   );
