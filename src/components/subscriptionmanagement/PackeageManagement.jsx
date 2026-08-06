@@ -127,7 +127,12 @@ export default function SubscriptionPackagesManagement() {
       setCurrentPackage({
         title: packageObj.title,
         description: packageObj.description,
-        price: packageObj.price,
+        price:
+          packageObj.price !== undefined && packageObj.price !== null
+            ? Number.isInteger(Number(packageObj.price))
+              ? String(Number(packageObj.price))
+              : parseFloat(packageObj.price).toFixed(2)
+            : "",
         duration: normalizedDuration,
         paymentType:
           packageObj.paymentType === "One-time"
@@ -176,10 +181,16 @@ export default function SubscriptionPackagesManagement() {
     }
 
     try {
+      // Whole numbers as-is; decimals keep exactly 2 places (20.5 → "20.50")
+      const numPrice = parseFloat(currentPackage.price);
+      const priceValue = Number.isInteger(numPrice)
+        ? numPrice
+        : numPrice.toFixed(2);
+
       // Format package data - send original price and discount percentage to backend
       const formattedPackage = {
         ...currentPackage,
-        price: Number(currentPackage.price),
+        price: priceValue,
         discount: currentPackage.discountPercentage
           ? parseInt(currentPackage.discountPercentage, 10)
           : 0,
@@ -221,6 +232,18 @@ export default function SubscriptionPackagesManagement() {
 
   const handlePackageChange = (e) => {
     const { name, value } = e.target;
+
+    // Price: allow digits with up to 2 decimal places (including .50, .00)
+    if (name === "price") {
+      if (value === "" || /^\d*\.?\d{0,2}$/.test(value)) {
+        setCurrentPackage((prev) => ({
+          ...prev,
+          price: value,
+        }));
+      }
+      return;
+    }
+
     setCurrentPackage((prev) => ({
       ...prev,
       [name]: value,
@@ -388,11 +411,17 @@ export default function SubscriptionPackagesManagement() {
                     <div>
                       {/* Original Price with strikethrough */}
                       <div className="text-2xl font-bold text-gray-400 line-through mb-1">
-                        ${pkg.originalPrice}
+                        $
+                        {Number.isInteger(Number(pkg.originalPrice))
+                          ? Number(pkg.originalPrice)
+                          : Number(pkg.originalPrice).toFixed(2)}
                       </div>
                       {/* Discounted Price */}
                       <div className="text-5xl font-bold text-red-600">
-                        ${pkg.price.toFixed(2)}
+                        $
+                        {Number.isInteger(Number(pkg.price))
+                          ? Number(pkg.price)
+                          : Number(pkg.price).toFixed(2)}
                       </div>
                       {/* Savings amount */}
                       {/* <div className="text-sm text-green-600 mt-1">
@@ -400,7 +429,12 @@ export default function SubscriptionPackagesManagement() {
                       </div> */}
                     </div>
                   ) : (
-                    <div className="text-6xl font-bold">${pkg.price}</div>
+                    <div className="text-6xl font-bold">
+                      $
+                      {Number.isInteger(Number(pkg.price))
+                        ? Number(pkg.price)
+                        : Number(pkg.price).toFixed(2)}
+                    </div>
                   )}
                 </div>
 
@@ -502,14 +536,28 @@ export default function SubscriptionPackagesManagement() {
                       Original Price <span className="text-red-500">*</span>
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
                       name="price"
                       value={currentPackage.price}
                       onChange={handlePackageChange}
+                      onBlur={() => {
+                        // Whole numbers stay as-is (20); decimals keep 2 places (20.5 → 20.50)
+                        if (
+                          currentPackage.price !== "" &&
+                          !isNaN(Number(currentPackage.price))
+                        ) {
+                          const num = parseFloat(currentPackage.price);
+                          setCurrentPackage((prev) => ({
+                            ...prev,
+                            price: Number.isInteger(num)
+                              ? String(num)
+                              : num.toFixed(2),
+                          }));
+                        }
+                      }}
                       className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-                      placeholder="e.g. 60.99"
-                      min="0"
-                      step="0.01"
+                      placeholder="e.g. 15.50"
                       required
                     />
                   </div>
