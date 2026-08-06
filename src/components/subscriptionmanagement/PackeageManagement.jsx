@@ -24,6 +24,11 @@ const PAYMENT_TYPE_OPTIONS = [
   { value: "Monthly", label: "Monthly" },
 ];
 
+const getPaymentTypeFromDuration = (duration) => {
+  const normalized = (duration || "").toLowerCase();
+  return normalized === "1 year" ? "Yearly" : "Monthly";
+};
+
 // Membership types that can see discounts
 const MEMBERSHIP_OPTIONS = [
   { value: "all", label: "All Users" },
@@ -41,7 +46,7 @@ export default function SubscriptionPackagesManagement() {
     description: "",
     price: "",
     duration: "1 month",
-    paymentType: "Yearly",
+    paymentType: "Monthly",
     subscriptionType: "web",
     // New discount fields
     discountPercentage: "",
@@ -124,28 +129,45 @@ export default function SubscriptionPackagesManagement() {
       const normalizedDuration =
         packageObj.duration?.toLowerCase() || "1 month";
 
+      // Form shows original price; API `price` is already discounted
+      const editPrice =
+        packageObj.originalPrice !== undefined &&
+        packageObj.originalPrice !== null
+          ? packageObj.originalPrice
+          : packageObj.price;
+
+      const formatPrice = (value) => {
+        if (value === undefined || value === null || value === "") return "";
+        const num = Number(value);
+        return Number.isInteger(num) ? String(num) : num.toFixed(2);
+      };
+
+      // Infer platform from product IDs if needed
+      const hasApple =
+        packageObj.appleProductId &&
+        packageObj.appleProductId.trim() !== "";
+      const hasGoogle =
+        packageObj.googleProductId &&
+        packageObj.googleProductId.trim() !== "";
+      const isGooglePlatform = hasApple && !hasGoogle
+        ? false
+        : packageObj.hasOwnProperty("isGoogle")
+          ? packageObj.isGoogle
+          : true;
+
       setCurrentPackage({
         title: packageObj.title,
         description: packageObj.description,
-        price:
-          packageObj.price !== undefined && packageObj.price !== null
-            ? Number.isInteger(Number(packageObj.price))
-              ? String(Number(packageObj.price))
-              : parseFloat(packageObj.price).toFixed(2)
-            : "",
+        price: formatPrice(editPrice),
         duration: normalizedDuration,
-        paymentType:
-          packageObj.paymentType === "One-time"
-            ? "Yearly"
-            : packageObj.paymentType,
+        paymentType: getPaymentTypeFromDuration(normalizedDuration),
         subscriptionType: packageObj.subscriptionType,
-        // Handle discount fields with defaults
-        discountPercentage: packageObj.discountPercentage || "",
+        // API returns `discount`, form uses `discountPercentage`
+        discountPercentage:
+          packageObj.discount > 0 ? String(packageObj.discount) : "",
         discountVisibleTo: packageObj.discountVisibleTo || "all",
         // Platform specific
-        isGoogle: packageObj.hasOwnProperty("isGoogle")
-          ? packageObj.isGoogle
-          : true,
+        isGoogle: isGooglePlatform,
         googleProductId: packageObj.googleProductId || "",
         appleProductId: packageObj.appleProductId || "",
       });
@@ -157,7 +179,7 @@ export default function SubscriptionPackagesManagement() {
         description: "",
         price: "",
         duration: "1 month",
-        paymentType: "Yearly",
+        paymentType: "Monthly",
         subscriptionType: "web",
         discountPercentage: "",
         discountVisibleTo: "all",
@@ -212,9 +234,9 @@ export default function SubscriptionPackagesManagement() {
         description: "",
         price: "",
         duration: "1 month",
-        paymentType: "Yearly",
+        paymentType: "Monthly",
         subscriptionType: "web",
-        discount: "",
+        discountPercentage: "",
         discountVisibleTo: "all",
         isGoogle: true,
         googleProductId: "",
@@ -241,6 +263,16 @@ export default function SubscriptionPackagesManagement() {
           price: value,
         }));
       }
+      return;
+    }
+
+    // Duration drives payment type: months → Monthly, year → Yearly
+    if (name === "duration") {
+      setCurrentPackage((prev) => ({
+        ...prev,
+        duration: value,
+        paymentType: getPaymentTypeFromDuration(value),
+      }));
       return;
     }
 
@@ -569,8 +601,8 @@ export default function SubscriptionPackagesManagement() {
                     <select
                       name="paymentType"
                       value={currentPackage.paymentType}
-                      onChange={handlePackageChange}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                      disabled
+                      className="w-full p-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed"
                       required
                     >
                       {PAYMENT_TYPE_OPTIONS.map((option) => (
@@ -579,6 +611,9 @@ export default function SubscriptionPackagesManagement() {
                         </option>
                       ))}
                     </select>
+                    <p className="mt-1 text-xs text-gray-500">
+                      Auto-selected from duration (months → Monthly, year → Yearly)
+                    </p>
                   </div>
                 </div>
 
@@ -695,38 +730,57 @@ export default function SubscriptionPackagesManagement() {
                         Platform <span className="text-primary">*</span>
                       </label>
                       <div className="flex items-center gap-6">
-                        <label className="flex items-center gap-2 cursor-pointer">
+                        <label
+                          className={`flex items-center gap-2 ${
+                            editingPackageId !== null
+                              ? "cursor-not-allowed opacity-70"
+                              : "cursor-pointer"
+                          }`}
+                        >
                           <input
                             type="radio"
                             name="isGoogle"
                             checked={currentPackage.isGoogle === true}
+                            disabled={editingPackageId !== null}
                             onChange={() =>
                               setCurrentPackage((prev) => ({
                                 ...prev,
                                 isGoogle: true,
                               }))
                             }
-                            className="w-4 h-4 text-primary border-gray-300 focus:ring-primary"
+                            className="w-4 h-4 text-primary border-gray-300 focus:ring-primary disabled:cursor-not-allowed"
                           />
                           <span className="text-sm text-gray-700">Google Play</span>
                         </label>
 
-                        <label className="flex items-center gap-2 cursor-pointer">
+                        <label
+                          className={`flex items-center gap-2 ${
+                            editingPackageId !== null
+                              ? "cursor-not-allowed opacity-70"
+                              : "cursor-pointer"
+                          }`}
+                        >
                           <input
                             type="radio"
                             name="isGoogle"
                             checked={currentPackage.isGoogle === false}
+                            disabled={editingPackageId !== null}
                             onChange={() =>
                               setCurrentPackage((prev) => ({
                                 ...prev,
                                 isGoogle: false,
                               }))
                             }
-                            className="w-4 h-4 text-primary border-gray-300 focus:ring-primary"
+                            className="w-4 h-4 text-primary border-gray-300 focus:ring-primary disabled:cursor-not-allowed"
                           />
                           <span className="text-sm text-gray-700">Apple App Store</span>
                         </label>
                       </div>
+                      {editingPackageId !== null && (
+                        <p className="mt-1 text-xs text-gray-500">
+                          Platform cannot be changed while editing
+                        </p>
+                      )}
                     </div>
 
                     {/* Product ID Input */}
