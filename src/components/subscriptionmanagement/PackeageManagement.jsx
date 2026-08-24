@@ -111,10 +111,10 @@ export default function SubscriptionPackagesManagement() {
 
     // App subscription specific validation
     if (currentPackage.subscriptionType === "app") {
-      if (currentPackage.isGoogle && !currentPackage.googleProductId) {
+      if (currentPackage.isGoogle && (!currentPackage.googleProductId || currentPackage.googleProductId.trim() === "")) {
         return false;
       }
-      if (!currentPackage.isGoogle && !currentPackage.appleProductId) {
+      if (!currentPackage.isGoogle && (!currentPackage.appleProductId || currentPackage.appleProductId.trim() === "")) {
         return false;
       }
     }
@@ -168,8 +168,8 @@ export default function SubscriptionPackagesManagement() {
         discountVisibleTo: packageObj.discountVisibleTo || "all",
         // Platform specific
         isGoogle: isGooglePlatform,
-        googleProductId: packageObj.googleProductId || "",
-        appleProductId: packageObj.appleProductId || "",
+        googleProductId: (packageObj.googleProductId || "").trim(),
+        appleProductId: (packageObj.appleProductId || "").trim(),
       });
       setEditingPackageId(packageObj._id || packageObj.id);
     } else {
@@ -212,6 +212,8 @@ export default function SubscriptionPackagesManagement() {
       // Format package data - send original price and discount percentage to backend
       const formattedPackage = {
         ...currentPackage,
+        googleProductId: currentPackage.googleProductId ? currentPackage.googleProductId.trim() : "",
+        appleProductId: currentPackage.appleProductId ? currentPackage.appleProductId.trim() : "",
         price: priceValue,
         discount: currentPackage.discountPercentage
           ? parseInt(currentPackage.discountPercentage, 10)
@@ -805,6 +807,13 @@ export default function SubscriptionPackagesManagement() {
                             // Update the field corresponding to the current platform selection
                             [prev.isGoogle ? "googleProductId" : "appleProductId"]:
                               val,
+                          }));
+                        }}
+                        onBlur={() => {
+                          setCurrentPackage((prev) => ({
+                            ...prev,
+                            googleProductId: prev.googleProductId ? prev.googleProductId.trim() : "",
+                            appleProductId: prev.appleProductId ? prev.appleProductId.trim() : "",
                           }));
                         }}
                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
