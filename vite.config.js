@@ -14,5 +14,10 @@ export default defineConfig(({ mode }) => {
       host: "69.62.67.86",
       port: 3007,
     },
+    preview: {
+      host: "127.0.0.1",
+      port: 4173,
+      strictPort: true,
+    },
   };
 });
