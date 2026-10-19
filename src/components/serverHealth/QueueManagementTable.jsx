@@ -1,23 +1,13 @@
 import React, { useState } from "react";
-import {
-  Table,
-  Badge,
-  Dropdown,
-  Modal,
-  Button,
-  Tooltip,
-} from "antd";
+import { Table, Dropdown, Modal, Tooltip } from "antd";
 import {
   RotateCcw,
   Trash2,
   Pause,
   Play,
   MoreVertical,
-  AlertTriangle,
   CheckCircle2,
-  Layers,
-  Clock,
-  Zap,
+  AlertCircle,
 } from "lucide-react";
 
 const QueueManagementTable = ({
@@ -25,7 +15,6 @@ const QueueManagementTable = ({
   onQueueAction,
   isExecutingAction,
 }) => {
-  const [selectedQueueAction, setSelectedQueueAction] = useState(null);
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   const [bulkActionType, setBulkActionType] = useState(null);
 
@@ -66,23 +55,19 @@ const QueueManagementTable = ({
 
   const columns = [
     {
-      title: "Queue Name",
+      title: "Queue",
       dataIndex: "name",
       key: "name",
+      width: 220,
       render: (name) => {
         return (
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-gray-100 text-gray-700">
-              <Layers className="w-4 h-4 text-primary" />
-            </div>
-            <div>
-              <span className="font-semibold text-gray-900 block font-mono text-xs sm:text-sm">
-                {name}
-              </span>
-              <span className="text-[11px] text-gray-400 capitalize">
-                BullMQ Worker
-              </span>
-            </div>
+          <div className="flex flex-col">
+            <span className="font-mono text-xs font-semibold text-gray-900">
+              {name}
+            </span>
+            <span className="text-[10px] text-gray-400 uppercase tracking-wider">
+              BullMQ Worker
+            </span>
           </div>
         );
       },
@@ -91,19 +76,17 @@ const QueueManagementTable = ({
       title: "Status",
       dataIndex: "isPaused",
       key: "isPaused",
+      width: 110,
       align: "center",
       render: (isPaused) => {
         return isPaused ? (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-            <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
             Paused
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
             Active
           </span>
         );
@@ -113,9 +96,9 @@ const QueueManagementTable = ({
       title: "Waiting",
       dataIndex: ["counts", "waiting"],
       key: "waiting",
-      align: "center",
+      align: "right",
       render: (val = 0) => (
-        <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-700">
+        <span className="font-mono text-xs text-gray-700">
           {val.toLocaleString()}
         </span>
       ),
@@ -124,13 +107,11 @@ const QueueManagementTable = ({
       title: "Active",
       dataIndex: ["counts", "active"],
       key: "active",
-      align: "center",
+      align: "right",
       render: (val = 0) => (
         <span
-          className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
-            val > 0
-              ? "bg-blue-50 text-blue-700 border border-blue-200 animate-pulse"
-              : "bg-gray-50 text-gray-500"
+          className={`font-mono text-xs ${
+            val > 0 ? "font-semibold text-blue-700" : "text-gray-400"
           }`}
         >
           {val.toLocaleString()}
@@ -141,9 +122,9 @@ const QueueManagementTable = ({
       title: "Completed",
       dataIndex: ["counts", "completed"],
       key: "completed",
-      align: "center",
+      align: "right",
       render: (val = 0) => (
-        <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
+        <span className="font-mono text-xs text-gray-700">
           {val.toLocaleString()}
         </span>
       ),
@@ -152,40 +133,36 @@ const QueueManagementTable = ({
       title: "Failed",
       dataIndex: ["counts", "failed"],
       key: "failed",
-      align: "center",
+      align: "right",
       render: (val = 0, record) => {
         if (val > 0) {
           return (
-            <div className="inline-flex items-center gap-2">
-              <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-100 text-red-700 border border-red-300 animate-pulse">
+            <div className="inline-flex items-center gap-1.5 justify-end">
+              <span className="px-1.5 py-0.5 rounded text-[11px] font-bold font-mono bg-rose-50 text-rose-700 border border-rose-200">
                 {val.toLocaleString()}
               </span>
               <button
                 onClick={() => handleAction(record.name, "retry-failed")}
                 disabled={isExecutingAction}
-                className="px-2 py-0.5 rounded-md bg-red-600 hover:bg-red-700 text-white text-[11px] font-semibold transition-all shadow-sm active:scale-95 disabled:opacity-50 inline-flex items-center gap-1"
-                title="Retry failed jobs in this queue"
+                className="h-5 px-1.5 rounded bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-medium transition-colors disabled:opacity-50 inline-flex items-center gap-1"
+                title="Retry failed jobs"
               >
-                <RotateCcw className="w-3 h-3" />
+                <RotateCcw className="w-2.5 h-2.5" />
                 Retry
               </button>
             </div>
           );
         }
-        return (
-          <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-50 text-gray-400">
-            0
-          </span>
-        );
+        return <span className="font-mono text-xs text-gray-400">0</span>;
       },
     },
     {
       title: "Delayed",
       dataIndex: ["counts", "delayed"],
       key: "delayed",
-      align: "center",
+      align: "right",
       render: (val = 0) => (
-        <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-purple-50 text-purple-700">
+        <span className="font-mono text-xs text-gray-700">
           {val.toLocaleString()}
         </span>
       ),
@@ -194,6 +171,7 @@ const QueueManagementTable = ({
       title: "Actions",
       key: "actions",
       align: "center",
+      width: 100,
       render: (_, record) => {
         const isPaused = record.isPaused;
         const failedCount = record.counts?.failed || 0;
@@ -202,14 +180,14 @@ const QueueManagementTable = ({
           {
             key: "retry",
             label: "Retry Failed",
-            icon: <RotateCcw className="w-3.5 h-3.5 text-blue-600" />,
+            icon: <RotateCcw className="w-3.5 h-3.5 text-gray-600" />,
             disabled: failedCount === 0 || isExecutingAction,
             onClick: () => handleAction(record.name, "retry-failed"),
           },
           {
             key: "clean-completed",
             label: "Clean Completed",
-            icon: <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />,
+            icon: <CheckCircle2 className="w-3.5 h-3.5 text-gray-600" />,
             disabled: isExecutingAction,
             onClick: () => handleAction(record.name, "clean-completed"),
           },
@@ -231,7 +209,7 @@ const QueueManagementTable = ({
           {
             key: "clean-failed",
             label: "Clean Failed",
-            icon: <Trash2 className="w-3.5 h-3.5 text-red-600" />,
+            icon: <Trash2 className="w-3.5 h-3.5 text-rose-600" />,
             danger: true,
             disabled: failedCount === 0 || isExecutingAction,
             onClick: () => handleAction(record.name, "clean-failed"),
@@ -240,34 +218,32 @@ const QueueManagementTable = ({
 
         return (
           <div className="flex items-center justify-center gap-1">
-            {/* Quick Pause/Resume button */}
-            <Tooltip title={isPaused ? "Resume Queue" : "Pause Queue"}>
+            <Tooltip title={isPaused ? "Resume" : "Pause"}>
               <button
                 onClick={() =>
                   handleAction(record.name, isPaused ? "resume" : "pause")
                 }
                 disabled={isExecutingAction}
-                className={`p-1.5 rounded-lg border transition-all active:scale-95 disabled:opacity-50 ${
-                  isPaused
-                    ? "bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100"
-                    : "bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100"
-                }`}
+                className="h-7 w-7 rounded border border-gray-200 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-600 flex items-center justify-center transition-colors disabled:opacity-40"
               >
                 {isPaused ? (
-                  <Play className="w-3.5 h-3.5" />
+                  <Play className="w-3 h-3 text-emerald-600" />
                 ) : (
-                  <Pause className="w-3.5 h-3.5" />
+                  <Pause className="w-3 h-3 text-amber-600" />
                 )}
               </button>
             </Tooltip>
 
-            {/* Dropdown Menu */}
-            <Dropdown menu={{ items: menuItems }} trigger={["click"]} placement="bottomRight">
+            <Dropdown
+              menu={{ items: menuItems }}
+              trigger={["click"]}
+              placement="bottomRight"
+            >
               <button
                 disabled={isExecutingAction}
-                className="p-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 active:scale-95 disabled:opacity-50"
+                className="h-7 w-7 rounded border border-gray-200 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-600 flex items-center justify-center transition-colors disabled:opacity-40"
               >
-                <MoreVertical className="w-3.5 h-3.5" />
+                <MoreVertical className="w-3 h-3" />
               </button>
             </Dropdown>
           </div>
@@ -277,39 +253,51 @@ const QueueManagementTable = ({
   ];
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-      {/* Table Top Header & Bulk Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    <div className="bg-white rounded-lg border border-gray-200">
+      {/* Table Header Bar */}
+      <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h2 className="text-lg font-bold text-gray-900">
-              Background Queues (BullMQ)
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-gray-900">
+              Background Queues
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">
-              {queues.length} {queues.length === 1 ? "Queue" : "Queues"}
+            <span className="px-1.5 py-0.5 rounded text-xs font-mono font-medium bg-gray-100 border border-gray-200 text-gray-700">
+              {queues.length}
             </span>
-            {totalFailed > 0 && (
-              <span className="px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 text-xs font-bold animate-pulse">
-                {totalFailed} Failed
-              </span>
-            )}
           </div>
-          <p className="text-xs text-gray-400 mt-1">
-            Real-time queue metrics, worker state and dead-letter retry actions
-          </p>
+          {/* Quick Aggregate Indicators */}
+          <div className="flex items-center gap-3 text-xs text-gray-500 font-mono mt-1">
+            <span>Waiting: {totalWaiting.toLocaleString()}</span>
+            <span>•</span>
+            <span className={totalActive > 0 ? "text-blue-700 font-semibold" : ""}>
+              Active: {totalActive.toLocaleString()}
+            </span>
+            <span>•</span>
+            <span>Completed: {totalCompleted.toLocaleString()}</span>
+            <span>•</span>
+            <span
+              className={
+                totalFailed > 0
+                  ? "text-rose-700 font-semibold bg-rose-50 px-1.5 py-0.2 rounded border border-rose-200"
+                  : ""
+              }
+            >
+              Failed: {totalFailed.toLocaleString()}
+            </span>
+          </div>
         </div>
 
         {/* Bulk Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => triggerBulkAction("retry-failed")}
             disabled={totalFailed === 0 || isExecutingAction}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:opacity-95 active:scale-95 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className="h-8 px-3 text-xs font-medium rounded bg-[#de5555] hover:bg-[#ca3939] active:bg-[#b83030] text-white transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed shadow-none"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Retry All Failed</span>
             {totalFailed > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 rounded-full bg-white/20 text-[10px]">
+              <span className="font-mono text-[10px] px-1 py-0.2 bg-white/20 rounded">
                 {totalFailed}
               </span>
             )}
@@ -318,22 +306,23 @@ const QueueManagementTable = ({
           <button
             onClick={() => triggerBulkAction("clean-completed")}
             disabled={totalCompleted === 0 || isExecutingAction}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-white border border-gray-300 hover:bg-gray-50 active:scale-95 text-gray-700 rounded-xl text-xs sm:text-sm font-semibold shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className="h-8 px-3 text-xs font-medium rounded border border-gray-300 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed shadow-none"
           >
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Clean All Completed</span>
+            <CheckCircle2 className="w-3.5 h-3.5 text-gray-500" />
+            <span>Clean Completed</span>
           </button>
         </div>
       </div>
 
-      {/* Table Data */}
-      <div className="overflow-x-auto rounded-xl border border-gray-100">
+      {/* Table Content */}
+      <div className="overflow-x-auto">
         <Table
           dataSource={queues.map((q) => ({ ...q, key: q.name }))}
           columns={columns}
           pagination={false}
-          size="middle"
-          rowClassName="hover:bg-gray-50/70 transition-colors"
+          size="small"
+          bordered={false}
+          className="enterprise-table"
         />
       </div>
 
@@ -347,53 +336,39 @@ const QueueManagementTable = ({
         }}
         onOk={handleConfirmBulk}
         confirmLoading={isExecutingAction}
+        title={
+          <div className="flex items-center gap-2 text-gray-900 font-semibold text-sm">
+            <AlertCircle className="w-4 h-4 text-amber-500" />
+            <span>
+              {bulkActionType === "retry-failed"
+                ? "Retry All Failed Queue Jobs"
+                : "Clean All Completed Queue Jobs"}
+            </span>
+          </div>
+        }
         okText={
           bulkActionType === "retry-failed"
-            ? "Retry All Failed Jobs"
-            : "Clean All Completed Jobs"
+            ? "Retry All Failed"
+            : "Clean Completed"
         }
         cancelText="Cancel"
         okButtonProps={{
-          style: {
-            backgroundColor:
-              bulkActionType === "retry-failed" ? "#DE5555" : "#10B981",
-            borderColor:
-              bulkActionType === "retry-failed" ? "#DE5555" : "#10B981",
-            fontWeight: "bold",
-          },
+          className: `!h-8 !px-3 !text-xs !font-medium !rounded !border-transparent ${
+            bulkActionType === "retry-failed"
+              ? "!bg-[#de5555] hover:!bg-[#ca3939]"
+              : "!bg-gray-800 hover:!bg-gray-900"
+          }`,
+        }}
+        cancelButtonProps={{
+          className:
+            "!h-8 !px-3 !text-xs !font-medium !rounded !border-gray-300 !text-gray-700 hover:!bg-gray-50",
         }}
       >
-        <div className="pt-2">
-          <div className="flex items-center gap-3 mb-3">
-            <div
-              className={`p-3 rounded-2xl ${
-                bulkActionType === "retry-failed"
-                  ? "bg-red-100 text-red-600"
-                  : "bg-emerald-100 text-emerald-600"
-              }`}
-            >
-              {bulkActionType === "retry-failed" ? (
-                <RotateCcw className="w-6 h-6" />
-              ) : (
-                <CheckCircle2 className="w-6 h-6" />
-              )}
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-gray-900">
-                {bulkActionType === "retry-failed"
-                  ? "Retry All Failed Jobs?"
-                  : "Clean All Completed Jobs?"}
-              </h3>
-              <p className="text-xs text-gray-500">
-                Target: All active queues
-              </p>
-            </div>
-          </div>
-
-          <p className="text-sm text-gray-600">
+        <div className="py-2">
+          <p className="text-xs text-gray-600 leading-relaxed">
             {bulkActionType === "retry-failed"
-              ? `This will move all failed jobs across all BullMQ queues back into the waiting state for re-processing (${totalFailed} failed jobs).`
-              : "This will remove and purge all completed jobs across all queues from Redis storage to free up memory."}
+              ? `This operation will requeue all ${totalFailed} failed jobs across all active BullMQ queues back into the waiting state for reprocessing.`
+              : "This operation will purge completed job records across all queues to free up Redis storage. Job histories will be removed."}
           </p>
         </div>
       </Modal>

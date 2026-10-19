@@ -171,3 +171,28 @@ input[type="number"]::-webkit-inner-spin-button {
 .leaderboard-switch-off.ant-switch {
   background-color: #d9d9d9 !important;
 }
+
+/* Enterprise Data Table */
+.enterprise-table .ant-table {
+  border-spacing: 0 !important;
+}
+
+.enterprise-table .ant-table-thead > tr > th {
+  background-color: #f9fafb !important;
+  color: #4b5563 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  padding: 8px 12px !important;
+}
+
+.enterprise-table .ant-table-tbody > tr > td {
+  padding: 8px 12px !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+}
+
+.enterprise-table .ant-table-tbody > tr:hover > td {
+  background-color: #f9fafb !important;
+}

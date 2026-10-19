@@ -1,15 +1,6 @@
 import React, { useState } from "react";
-import {
-  HardDrive,
-  Cpu,
-  Database,
-  Flame,
-  AlertCircle,
-  Layers,
-  CheckCircle2,
-  Trash2,
-} from "lucide-react";
-import { Modal, Progress } from "antd";
+import { Modal } from "antd";
+import { Trash2, AlertCircle } from "lucide-react";
 
 const SystemResourcesGrid = ({
   healthData,
@@ -32,11 +23,11 @@ const SystemResourcesGrid = ({
   const usedMB = memory.usedMemory?.MB ?? 0;
   const totalMB = memory.totalMemory?.MB ?? 0;
 
-  // Memory progress bar color
-  const getProgressStroke = (pct) => {
-    if (pct >= 85) return "#ef4444"; // red
-    if (pct >= 70) return "#f59e0b"; // amber
-    return "#10b981"; // emerald
+  // Functional color for RAM threshold
+  const getMemoryBarColor = (pct) => {
+    if (pct >= 85) return "bg-rose-500";
+    if (pct >= 70) return "bg-amber-500";
+    return "bg-emerald-500";
   };
 
   // CPU stats
@@ -45,10 +36,6 @@ const SystemResourcesGrid = ({
   const load1m = parseFloat(loadAvg["1min"] ?? 0);
   const load5m = parseFloat(loadAvg["5min"] ?? 0);
   const load15m = parseFloat(loadAvg["15min"] ?? 0);
-
-  // Normalize load against core count (e.g., load / cores * 100)
-  const calcLoadPct = (val) =>
-    Math.min(100, Math.round((val / Math.max(1, cpuCores)) * 100));
 
   // Redis stats
   const redis = queueData?.redis || {};
@@ -73,232 +60,193 @@ const SystemResourcesGrid = ({
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* CARD 1: RAM USAGE */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:shadow-md flex flex-col justify-between">
+        <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                  <HardDrive className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-800">
-                    RAM Usage
-                  </h3>
-                  <p className="text-xs text-gray-400">System Memory</p>
-                </div>
-              </div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-medium uppercase tracking-wider text-gray-500">
+                RAM Utilization
+              </span>
               <span
-                className={`text-xs px-2.5 py-1 rounded-full font-bold ${
+                className={`text-xs font-mono font-semibold px-1.5 py-0.5 rounded border ${
                   usedPercentage >= 85
-                    ? "bg-red-50 text-red-600 border border-red-200"
+                    ? "bg-rose-50 text-rose-700 border-rose-200"
                     : usedPercentage >= 70
-                    ? "bg-amber-50 text-amber-600 border border-amber-200"
-                    : "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                    : "bg-emerald-50 text-emerald-700 border-emerald-200"
                 }`}
               >
                 {usedPercentage.toFixed(1)}%
               </span>
             </div>
 
-            {/* Circular / Linear Progress */}
-            <div className="my-3">
-              <div className="flex justify-between items-baseline mb-1">
-                <span className="text-2xl font-bold text-gray-800">
-                  {usedGB} <span className="text-sm font-normal text-gray-400">/ {totalGB} GB</span>
-                </span>
-                <span className="text-xs text-gray-500">
-                  {freeGB} GB free
-                </span>
-              </div>
-              <Progress
-                percent={Math.round(usedPercentage)}
-                strokeColor={getProgressStroke(usedPercentage)}
-                showInfo={false}
-                strokeWidth={10}
-                className="my-1"
-              />
+            <div className="flex items-baseline gap-1.5 my-2">
+              <span className="text-2xl font-semibold text-gray-900 font-mono">
+                {usedGB}
+              </span>
+              <span className="text-sm text-gray-500 font-mono">
+                / {totalGB} GB
+              </span>
+            </div>
+
+            {/* Flat Minimal Progress Bar */}
+            <div className="w-full bg-gray-100 rounded-full h-1.5 my-2 overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-300 ${getMemoryBarColor(
+                  usedPercentage
+                )}`}
+                style={{ width: `${usedPercentage}%` }}
+              ></div>
             </div>
           </div>
 
-          <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-            <span>Used: {usedMB} MB</span>
+          <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-mono">
+            <span>Free: {freeGB} GB</span>
             <span>Total: {totalMB} MB</span>
           </div>
         </div>
 
         {/* CARD 2: CPU LOAD AVERAGE */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:shadow-md flex flex-col justify-between">
+        <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
-                  <Cpu className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-800">
-                    CPU Load
-                  </h3>
-                  <p className="text-xs text-gray-400">Processing Load</p>
-                </div>
-              </div>
-              <span className="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-200">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-medium uppercase tracking-wider text-gray-500">
+                CPU Load Average
+              </span>
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-gray-100 border border-gray-200 text-gray-700">
                 {cpuCores} {cpuCores === 1 ? "Core" : "Cores"}
               </span>
             </div>
 
-            {/* Load average chips */}
-            <div className="grid grid-cols-3 gap-2 my-2">
-              <div className="p-2.5 rounded-xl bg-gray-50 border border-gray-100 text-center">
-                <p className="text-[11px] font-medium text-gray-400 mb-0.5">1 min</p>
-                <p className="text-base font-bold text-gray-800">
+            <div className="grid grid-cols-3 gap-2 my-2.5">
+              <div className="border border-gray-100 rounded p-2 text-center bg-gray-50/50">
+                <span className="text-[10px] text-gray-400 uppercase font-mono block">
+                  1 Min
+                </span>
+                <span className="text-sm font-semibold text-gray-900 font-mono">
                   {load1m.toFixed(2)}
-                </p>
-                <p className="text-[10px] text-gray-400 mt-0.5">
-                  {calcLoadPct(load1m)}% cap
-                </p>
+                </span>
               </div>
-
-              <div className="p-2.5 rounded-xl bg-gray-50 border border-gray-100 text-center">
-                <p className="text-[11px] font-medium text-gray-400 mb-0.5">5 min</p>
-                <p className="text-base font-bold text-gray-800">
+              <div className="border border-gray-100 rounded p-2 text-center bg-gray-50/50">
+                <span className="text-[10px] text-gray-400 uppercase font-mono block">
+                  5 Min
+                </span>
+                <span className="text-sm font-semibold text-gray-900 font-mono">
                   {load5m.toFixed(2)}
-                </p>
-                <p className="text-[10px] text-gray-400 mt-0.5">
-                  {calcLoadPct(load5m)}% cap
-                </p>
+                </span>
               </div>
-
-              <div className="p-2.5 rounded-xl bg-gray-50 border border-gray-100 text-center">
-                <p className="text-[11px] font-medium text-gray-400 mb-0.5">15 min</p>
-                <p className="text-base font-bold text-gray-800">
+              <div className="border border-gray-100 rounded p-2 text-center bg-gray-50/50">
+                <span className="text-[10px] text-gray-400 uppercase font-mono block">
+                  15 Min
+                </span>
+                <span className="text-sm font-semibold text-gray-900 font-mono">
                   {load15m.toFixed(2)}
-                </p>
-                <p className="text-[10px] text-gray-400 mt-0.5">
-                  {calcLoadPct(load15m)}% cap
-                </p>
+                </span>
               </div>
             </div>
           </div>
 
           <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-            <span>Status:</span>
+            <span>Load State</span>
             <span
-              className={`font-semibold ${
+              className={`font-medium ${
                 load1m > cpuCores
-                  ? "text-red-500"
+                  ? "text-rose-600"
                   : load1m > cpuCores * 0.7
-                  ? "text-amber-500"
+                  ? "text-amber-600"
                   : "text-emerald-600"
               }`}
             >
               {load1m > cpuCores
-                ? "Heavy Load"
+                ? "Elevated"
                 : load1m > cpuCores * 0.7
                 ? "Moderate"
-                : "Optimal"}
+                : "Normal"}
             </span>
           </div>
         </div>
 
         {/* CARD 3: REDIS MEMORY & KEYS */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm transition-all hover:shadow-md flex flex-col justify-between">
+        <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-rose-50 text-primary">
-                  <Database className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-800">
-                    Redis Storage
-                  </h3>
-                  <p className="text-xs text-gray-400">v{redisVersion}</p>
-                </div>
-              </div>
-              <span className="text-xs px-2.5 py-1 rounded-full bg-rose-50 text-primary font-bold border border-rose-200">
-                {usedMemoryHuman}
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-medium uppercase tracking-wider text-gray-500">
+                Redis Storage
+              </span>
+              <span className="text-xs font-mono text-gray-500">
+                v{redisVersion}
               </span>
             </div>
 
-            <div className="space-y-2 my-2">
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-gray-500 font-medium">Total Keys:</span>
-                <span className="font-bold text-gray-800 text-sm">
-                  {totalKeys.toLocaleString()}
-                </span>
-              </div>
+            <div className="flex items-baseline gap-2 my-2">
+              <span className="text-2xl font-semibold text-gray-900 font-mono">
+                {usedMemoryHuman}
+              </span>
+              <span className="text-xs text-gray-500 font-mono">
+                ({totalKeys.toLocaleString()} keys)
+              </span>
+            </div>
 
-              {/* Progress bar showing Cache Keys vs Bull Keys */}
-              <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden flex">
-                <div
-                  style={{ width: `${cacheRatio}%` }}
-                  className="bg-primary h-full"
-                  title={`Cache: ${appCacheKeys} (${cacheRatio}%)`}
-                ></div>
-                <div
-                  style={{ width: `${bullRatio}%` }}
-                  className="bg-indigo-400 h-full"
-                  title={`BullMQ: ${bullKeys} (${bullRatio}%)`}
-                ></div>
-              </div>
+            {/* Distribution Bar */}
+            <div className="w-full bg-gray-100 rounded-full h-1.5 my-2 flex overflow-hidden">
+              <div
+                className="bg-gray-700 h-full"
+                style={{ width: `${cacheRatio}%` }}
+                title={`Cache Keys: ${appCacheKeys}`}
+              ></div>
+              <div
+                className="bg-gray-400 h-full"
+                style={{ width: `${bullRatio}%` }}
+                title={`BullMQ Keys: ${bullKeys}`}
+              ></div>
+            </div>
 
-              <div className="flex justify-between text-[11px] text-gray-500 pt-1">
-                <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-primary inline-block"></span>
-                  Cache: <b className="text-gray-700">{appCacheKeys}</b>
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-indigo-400 inline-block"></span>
-                  BullMQ: <b className="text-gray-700">{bullKeys}</b>
-                </span>
-              </div>
+            <div className="flex items-center justify-between text-[11px] text-gray-500 font-mono">
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-sm bg-gray-700 inline-block"></span>
+                Cache: {appCacheKeys}
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-sm bg-gray-400 inline-block"></span>
+                Bull: {bullKeys}
+              </span>
             </div>
           </div>
 
           <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-            <span>Uptime:</span>
-            <span className="font-medium text-gray-700">
+            <span>Uptime</span>
+            <span className="font-mono text-gray-700">
               {redisUptimeDays ? `${redisUptimeDays} days` : "Active"}
             </span>
           </div>
         </div>
 
-        {/* CARD 4: CACHE MANAGEMENT CARD */}
-        <div className="bg-gradient-to-br from-rose-50/50 via-white to-amber-50/30 rounded-2xl border border-rose-100 p-5 shadow-sm transition-all hover:shadow-md flex flex-col justify-between">
+        {/* CARD 4: CACHE MANAGEMENT */}
+        <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-primary text-white shadow-sm">
-                  <Flame className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-800">
-                    Cache Control
-                  </h3>
-                  <p className="text-xs text-gray-400">Redis Cache Layer</p>
-                </div>
-              </div>
-              <span className="text-xs px-2 py-0.5 rounded-md bg-white border border-rose-200 text-primary font-bold">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-medium uppercase tracking-wider text-gray-500">
+                Cache Management
+              </span>
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-gray-100 border border-gray-200 text-gray-700">
                 {appCacheKeys} Keys
               </span>
             </div>
 
-            <p className="text-xs text-gray-600 leading-relaxed mb-4">
-              Purges all query caches and warmed responses without terminating or
-              clearing background queue jobs.
+            <p className="text-xs text-gray-500 leading-normal my-2">
+              Purges in-memory and Redis query caches while keeping background queue jobs intact.
             </p>
           </div>
 
-          <div>
+          <div className="pt-3">
             <button
               onClick={() => setIsFlushModalOpen(true)}
               disabled={isFlushing}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-rose-300 hover:bg-rose-50 active:scale-[0.98] text-primary rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm disabled:opacity-50"
+              className="w-full h-8 px-3 text-xs font-medium border border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 rounded transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Trash2 className="w-4 h-4 text-primary" />
-              <span>{isFlushing ? "Flushing..." : "Flush App Cache"}</span>
+              <Trash2 className="w-3.5 h-3.5 text-gray-500" />
+              <span>{isFlushing ? "Purging..." : "Flush App Cache"}</span>
             </button>
           </div>
         </div>
@@ -311,63 +259,54 @@ const SystemResourcesGrid = ({
         onCancel={() => setIsFlushModalOpen(false)}
         onOk={handleConfirmFlush}
         confirmLoading={isFlushing}
-        okText="Yes, Flush Cache"
+        title={
+          <div className="flex items-center gap-2 text-gray-900 font-semibold text-sm">
+            <AlertCircle className="w-4 h-4 text-amber-500" />
+            <span>Confirm Cache Flush</span>
+          </div>
+        }
+        okText="Confirm Flush"
         cancelText="Cancel"
         okButtonProps={{
-          style: {
-            backgroundColor: "#DE5555",
-            borderColor: "#DE5555",
-            fontWeight: "bold",
-          },
+          className:
+            "!h-8 !px-3 !text-xs !font-medium !rounded !bg-[#de5555] hover:!bg-[#ca3939] !border-[#de5555]",
+        }}
+        cancelButtonProps={{
+          className:
+            "!h-8 !px-3 !text-xs !font-medium !rounded !border-gray-300 !text-gray-700 hover:!bg-gray-50",
         }}
       >
-        <div className="pt-2">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-3 rounded-2xl bg-red-100 text-red-600">
-              <AlertCircle className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-gray-900">
-                Confirm Cache Flush
-              </h3>
-              <p className="text-xs text-gray-500">
-                This will purge in-memory / Redis cache keys.
-              </p>
-            </div>
-          </div>
-
-          <p className="text-sm text-gray-600 mb-4">
-            Are you sure you want to flush the cache? This action will remove
-            all cached query responses ({appCacheKeys} keys). The system will
-            re-query the database for subsequent requests until cache warms up again.
+        <div className="py-2 space-y-3">
+          <p className="text-xs text-gray-600 leading-relaxed">
+            Flushing the cache will invalidate temporary stored responses ({appCacheKeys} active keys). Subsequent queries will read directly from the database until the cache repopulates.
           </p>
 
-          <div className="p-3 rounded-xl bg-gray-50 border border-gray-200/80 mb-2">
-            <span className="text-xs font-semibold text-gray-700 block mb-2">
-              Select Flush Scope:
+          <div className="border border-gray-200 rounded p-3 bg-gray-50/50 space-y-2">
+            <span className="text-[11px] font-semibold text-gray-700 uppercase tracking-wider block">
+              Flush Scope
             </span>
-            <div className="flex gap-4">
-              <label className="flex items-center gap-2 text-xs font-medium text-gray-800 cursor-pointer">
+            <div className="space-y-1.5">
+              <label className="flex items-center gap-2 text-xs text-gray-800 cursor-pointer">
                 <input
                   type="radio"
                   name="flushType"
                   value="cache-only"
                   checked={flushType === "cache-only"}
                   onChange={() => setFlushType("cache-only")}
-                  className="text-primary focus:ring-primary"
+                  className="w-3.5 h-3.5 text-[#de5555] focus:ring-[#de5555]"
                 />
-                App Cache Only (Recommended)
+                <span>Application Cache Only (Preserves BullMQ queues)</span>
               </label>
-              <label className="flex items-center gap-2 text-xs font-medium text-gray-800 cursor-pointer">
+              <label className="flex items-center gap-2 text-xs text-gray-800 cursor-pointer">
                 <input
                   type="radio"
                   name="flushType"
                   value="all"
                   checked={flushType === "all"}
                   onChange={() => setFlushType("all")}
-                  className="text-primary focus:ring-primary"
+                  className="w-3.5 h-3.5 text-[#de5555] focus:ring-[#de5555]"
                 />
-                All Redis Keys
+                <span>Entire Redis Store (All Keys)</span>
               </label>
             </div>
           </div>
