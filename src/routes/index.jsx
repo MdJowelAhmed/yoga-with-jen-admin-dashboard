@@ -41,6 +41,7 @@ import CategoryVideos from "../components/CategoryVideo/CategoryVideo";
 import PushNotification from "../Pages/Dashboard/PushNotification";
 import GreetingMessage from "../Pages/Dashboard/GreetingMessage";
 import Leaderboard from "../Pages/Dashboard/Leaderboard";
+import ServerHealth from "../Pages/Dashboard/ServerHealth";
 
 const router = createBrowserRouter([
   {
@@ -167,6 +168,10 @@ const router = createBrowserRouter([
       {
         path: "/notification",
         element: <Notifications />,
+      },
+      {
+        path: "/server-health",
+        element: <ServerHealth />,
       },
     ],
   },

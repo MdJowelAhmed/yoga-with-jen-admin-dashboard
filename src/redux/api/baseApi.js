@@ -9,7 +9,10 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${getBaseUrl(isProduction)}/api/v1`,
     prepareHeaders: (headers) => {
-      const token = localStorage.getItem("token");
+      const token =
+        localStorage.getItem("token") ||
+        localStorage.getItem("adminToken") ||
+        localStorage.getItem("accessToken");
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
       }
@@ -33,6 +36,7 @@ export const api = createApi({
     "Notification",
     "PushNotification",
     "Leaderboard",
+    "ServerHealth",
   ],
   endpoints: () => ({}),
 });
