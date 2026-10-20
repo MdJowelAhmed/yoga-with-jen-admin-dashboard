@@ -323,6 +323,18 @@ const QueueManagementTable = ({
           size="small"
           bordered={false}
           className="enterprise-table"
+          locale={{
+            emptyText: (
+              <div className="py-8 text-center text-gray-500">
+                <p className="text-xs font-medium text-gray-700">
+                  No background queues currently registered
+                </p>
+                <p className="text-[11px] text-gray-400 mt-0.5">
+                  BullMQ worker queues will automatically appear here once workers or jobs are active.
+                </p>
+              </div>
+            ),
+          }}
         />
       </div>
 

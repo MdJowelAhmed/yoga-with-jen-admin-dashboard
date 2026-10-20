@@ -10,21 +10,16 @@ import StatusSummaryBar from "../../components/serverHealth/StatusSummaryBar";
 import SystemResourcesGrid from "../../components/serverHealth/SystemResourcesGrid";
 import QueueManagementTable from "../../components/serverHealth/QueueManagementTable";
 import ServerHealthSkeleton from "../../components/serverHealth/ServerHealthSkeleton";
-import {
-  mockServerHealth,
-  mockQueueAndCache,
-} from "../../components/serverHealth/mockData";
 import { RefreshCw, AlertCircle, RotateCcw } from "lucide-react";
 
 const ServerHealth = () => {
   // Polling interval in ms: 0 (off), 10000 (10s), 30000 (30s)
   const [autoRefreshInterval, setAutoRefreshInterval] = useState(10000);
-  const [isDemoMode, setIsDemoMode] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date().toISOString());
 
   // RTK Query endpoints
   const {
-    data: rawHealthData,
+    data: healthData,
     isLoading: isHealthLoading,
     isFetching: isHealthFetching,
     isError: isHealthError,
@@ -35,7 +30,7 @@ const ServerHealth = () => {
   });
 
   const {
-    data: rawQueueData,
+    data: queueData,
     isLoading: isQueueLoading,
     isFetching: isQueueFetching,
     isError: isQueueError,
@@ -51,25 +46,19 @@ const ServerHealth = () => {
   const [flushCache, { isLoading: isFlushing }] = useFlushCacheMutation();
 
   const hasApiError = isHealthError || isQueueError;
+  const isLoading = isHealthLoading || isQueueLoading;
+  const isFetching = isHealthFetching || isQueueFetching;
 
   useEffect(() => {
-    if (rawHealthData || rawQueueData) {
+    if (healthData || queueData) {
       setLastUpdated(new Date().toISOString());
     }
-  }, [rawHealthData, rawQueueData]);
+  }, [healthData, queueData]);
 
   // Handle Manual Refresh
   const handleRefresh = async () => {
     const toastId = toast.loading("Updating telemetry...");
     try {
-      if (isDemoMode) {
-        setTimeout(() => {
-          setLastUpdated(new Date().toISOString());
-          toast.success("Telemetry updated (Demo)", { id: toastId });
-        }, 300);
-        return;
-      }
-
       await Promise.all([refetchHealth(), refetchQueue()]);
       setLastUpdated(new Date().toISOString());
       toast.success("Telemetry updated", { id: toastId });
@@ -82,15 +71,6 @@ const ServerHealth = () => {
   const handleQueueAction = async (queueName, action) => {
     const targetLabel = queueName === "all" ? "all queues" : queueName;
     const toastId = toast.loading(`Executing ${action} on ${targetLabel}...`);
-
-    if (isDemoMode) {
-      setTimeout(() => {
-        toast.success(`Executed "${action}" on ${targetLabel} (Demo)`, {
-          id: toastId,
-        });
-      }, 500);
-      return;
-    }
 
     try {
       const res = await executeQueueAction({ queueName, action }).unwrap();
@@ -109,13 +89,6 @@ const ServerHealth = () => {
   const handleFlushCache = async (type = "cache-only") => {
     const toastId = toast.loading(`Flushing ${type} cache...`);
 
-    if (isDemoMode) {
-      setTimeout(() => {
-        toast.success("App cache flushed (Demo)", { id: toastId });
-      }, 500);
-      return;
-    }
-
     try {
       const res = await flushCache({ type }).unwrap();
       toast.success(res?.message || "Cache purged successfully", {
@@ -130,20 +103,15 @@ const ServerHealth = () => {
     }
   };
 
-  // Resolved data (either real API response or demo mock)
-  const healthData =
-    isDemoMode || (hasApiError && !rawHealthData)
-      ? mockServerHealth
-      : rawHealthData;
-
-  const queueData =
-    isDemoMode || (hasApiError && !rawQueueData)
-      ? mockQueueAndCache
-      : rawQueueData;
-
-  const isLoading =
-    (isHealthLoading || isQueueLoading) && !isDemoMode && !hasApiError;
-  const isFetching = isHealthFetching || isQueueFetching;
+  const getErrorMessage = () => {
+    const err = healthError || queueError;
+    return (
+      err?.data?.message ||
+      err?.data?.errorMessages?.[0]?.message ||
+      err?.error ||
+      `HTTP Error ${err?.status || "Connection Failed"}`
+    );
+  };
 
   return (
     <div className="space-y-4 pb-10">
@@ -212,37 +180,23 @@ const ServerHealth = () => {
               {isFetching ? "Updating..." : "Refresh"}
             </span>
           </button>
-
-          {/* Fallback Simulation Switch */}
-          <button
-            onClick={() => setIsDemoMode((prev) => !prev)}
-            className={`h-8 px-2.5 text-xs font-mono rounded border transition-colors ${
-              isDemoMode
-                ? "bg-amber-50 text-amber-800 border-amber-300 font-medium"
-                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
-            }`}
-            title="Toggle between live backend and simulation preview"
-          >
-            {isDemoMode ? "Mode: Demo" : "Mode: Live"}
-          </button>
         </div>
       </div>
 
-      {/* Backend API Notice (Subtle, non-disruptive) */}
-      {hasApiError && !isDemoMode && (
-        <div className="border-l-2 border-amber-500 bg-amber-50/70 p-3 rounded-r text-xs text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      {/* Backend API Error Banner */}
+      {hasApiError && (
+        <div className="border-l-2 border-rose-500 bg-rose-50/70 p-3 rounded-r text-xs text-rose-900 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
             <span>
-              Backend server-health endpoint returned an error (
-              {healthError?.status || queueError?.status || "Offline"}). Showing
-              fallback data for UI validation.
+              Failed to connect to backend server-health API:{" "}
+              <strong>{getErrorMessage()}</strong>.
             </span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => handleRefresh()}
-              className="text-xs font-medium text-amber-900 hover:underline flex items-center gap-1"
+              className="text-xs font-medium text-rose-900 hover:underline flex items-center gap-1"
             >
               <RotateCcw className="w-3 h-3" /> Retry Connection
             </button>
@@ -277,7 +231,7 @@ const ServerHealth = () => {
 
       {/* Footer Timestamp */}
       <div className="pt-2 flex justify-between items-center text-[11px] text-gray-400 font-mono">
-        <span>Infrastructure Monitor • Norlan Dashboard</span>
+        <span>Infrastructure Monitor</span>
         <span>Last Polled: {new Date(lastUpdated).toLocaleTimeString()}</span>
       </div>
     </div>
