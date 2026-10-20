@@ -229,11 +229,7 @@ const ServerHealth = () => {
         </>
       )}
 
-      {/* Footer Timestamp */}
-      <div className="pt-2 flex justify-between items-center text-[11px] text-gray-400 font-mono">
-        <span>Infrastructure Monitor</span>
-        <span>Last Polled: {new Date(lastUpdated).toLocaleTimeString()}</span>
-      </div>
+   
     </div>
   );
 };
